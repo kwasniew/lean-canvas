@@ -4,15 +4,44 @@ import Html exposing (..)
 import Html.Attributes exposing (class, attribute, type_, href, draggable)
 import Html.Events exposing (..)
 
+
 type alias Model =
-    { sections : List String
+    { sections : List Section }
+
+
+type alias Section =
+    { name : String
     }
 
 
 initialModel : Model
 initialModel =
-    { sections = []
+    { sections =
+        [ { name = "key-partners" }
+        , { name = "key-activities" }
+        , { name = "key-resources" }
+        , { name = "value-proposition" }
+        , { name = "customer-relationships" }
+        , { name = "channels" }
+        , { name = "customer-segments" }
+        , { name = "cost-structure" }
+        , { name = "revenue-streams" }
+        ]
     }
+
+
+getSection : List Section -> String -> Section
+getSection sections name =
+    let
+        section =
+            List.head (List.filter (\section -> section.name == name) sections)
+    in
+        case section of
+            Just s ->
+                s
+
+            Nothing ->
+                { name = "default-section" }
 
 
 init : ( Model, Cmd Msg )
@@ -22,13 +51,14 @@ init =
 
 toHeader : String -> String
 toHeader dataAttribute =
-  (String.split "-" dataAttribute) |> List.map String.toUpper |> String.join " "
+    (String.split "-" dataAttribute) |> List.map String.toUpper |> String.join " "
 
-viewSection : String -> String -> Html Msg
-viewSection cssClass dataAttribute =
-    div [ class (cssClass ++ " section"), attribute "data-name" dataAttribute ]
+
+viewSection : String -> Section -> Html Msg
+viewSection cssClass section =
+    div [ class (cssClass ++ " section"), attribute "data-name" section.name ]
         [ header []
-            [ text (toHeader dataAttribute) ]
+            [ text (toHeader section.name) ]
         , div [ class "scrollable-items" ]
             []
         , div [ class "add-item", onClick EnableAddCard ]
@@ -38,39 +68,46 @@ viewSection cssClass dataAttribute =
 
 view : Model -> Html Msg
 view model =
-    div [ class "main" ]
-        [ div [ class "template card" ]
-            [ div [ class "card", draggable "true" ]
-                [ text "{{text}}            "
-                , div [ class "delete-button" ]
-                    [ a [ href "#" ]
-                        [ text "x" ]
+    let
+        sections =
+            model.sections
+
+        getSectionByName =
+            getSection sections
+    in
+        div [ class "main" ]
+            [ div [ class "template card" ]
+                [ div [ class "card", draggable "true" ]
+                    [ text "{{text}}            "
+                    , div [ class "delete-button" ]
+                        [ a [ href "#" ]
+                            [ text "x" ]
+                        ]
                     ]
                 ]
-            ]
-        , div [ class "template new-card" ]
-            [ input [ type_ "text" ]
-                []
-            , text "    "
-            ]
-        , div [ class "first-row" ]
-            [ viewSection "first-row-column" "key-partners"
-            , div [ class "first-row-column" ]
-                [ viewSection "first-row-column-row" "key-activities"
-                , viewSection "first-row-column-row" "key-resources"
+            , div [ class "template new-card" ]
+                [ input [ type_ "text" ]
+                    []
+                , text "    "
                 ]
-            , viewSection "first-row-column" "value-proposition"
-            , div [ class "first-row-column" ]
-                [ viewSection "first-row-column-row" "customer-relationships"
-                , viewSection "first-row-column-row" "channels"
+            , div [ class "first-row" ]
+                [ viewSection "first-row-column" (getSectionByName "key-partners")
+                , div [ class "first-row-column" ]
+                    [ viewSection "first-row-column-row" (getSectionByName "key-activities")
+                    , viewSection "first-row-column-row" (getSectionByName "key-resources")
+                    ]
+                , viewSection "first-row-column" (getSectionByName "value-proposition")
+                , div [ class "first-row-column" ]
+                    [ viewSection "first-row-column-row" (getSectionByName "customer-relationships")
+                    , viewSection "first-row-column-row" (getSectionByName "channels")
+                    ]
+                , viewSection "first-row-column" (getSectionByName "customer-segments")
                 ]
-            , viewSection "first-row-column" "customer-segments"
+            , div [ class "second-row" ]
+                [ viewSection "second-row-column" (getSectionByName "cost-structure")
+                , viewSection "second-row-column" (getSectionByName "revenue-streams")
+                ]
             ]
-        , div [ class "second-row" ]
-            [ viewSection "second-row-column" "cost-structure"
-            , viewSection "second-row-column" "revenue-streams" 
-            ]
-        ]
 
 
 type Msg
@@ -80,5 +117,5 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-      EnableAddCard ->
-        ( model, Cmd.none )
+        EnableAddCard ->
+            ( model, Cmd.none )
