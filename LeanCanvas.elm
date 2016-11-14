@@ -20,6 +20,18 @@ init =
     ( initialModel, Cmd.none )
 
 
+viewSection : String -> String -> String -> Html Msg
+viewSection cssClass dataAttribute headerText =
+    div [ class (cssClass ++ " section"), attribute "data-name" dataAttribute ]
+        [ header []
+            [ text headerText ]
+        , div [ class "scrollable-items" ]
+            []
+        , div [ class "add-item" ]
+            [ text "Add a card..." ]
+        ]
+
+
 view : Model -> Html Msg
 view model =
     div [ class "main" ]
@@ -38,84 +50,21 @@ view model =
             , text "    "
             ]
         , div [ class "first-row" ]
-            [ div [ class "first-row-column section", attribute "data-name" "key-partners" ]
-                [ header []
-                    [ text "Key Partners" ]
-                , div [ class "scrollable-items" ]
-                    []
-                , div [ class "add-item" ]
-                    [ text "Add a card..." ]
-                ]
+            [ viewSection "first-row-column" "key-partners" "Key Partners"
             , div [ class "first-row-column" ]
-                [ div [ class "first-row-column-row section", attribute "data-name" "key-activities" ]
-                    [ header []
-                        [ text "Key Activities" ]
-                    , div [ class "scrollable-items" ]
-                        []
-                    , div [ class "add-item" ]
-                        [ text "Add a card..." ]
-                    ]
-                , div [ class "first-row-column-row section", attribute "data-name" "key-resources" ]
-                    [ header []
-                        [ text "Key Resources" ]
-                    , div [ class "scrollable-items" ]
-                        []
-                    , div [ class "add-item" ]
-                        [ text "Add a card..." ]
-                    ]
+                [ viewSection "first-row-column-row" "key-activities" "Key Activities"
+                , viewSection "first-row-column-row" "key-resources" "Key Resources"
                 ]
-            , div [ class "first-row-column section", attribute "data-name" "value-proposition" ]
-                [ header []
-                    [ text "Value Proposition" ]
-                , div [ class "scrollable-items" ]
-                    []
-                , div [ class "add-item" ]
-                    [ text "Add a card..." ]
-                ]
+            , viewSection "first-row-column" "value-proposition" "Value Proposition"
             , div [ class "first-row-column" ]
-                [ div [ class "first-row-column-row section", attribute "data-name" "customer-relationships" ]
-                    [ header []
-                        [ text "Customer Relationships" ]
-                    , div [ class "scrollable-items" ]
-                        []
-                    , div [ class "add-item" ]
-                        [ text "Add a card..." ]
-                    ]
-                , div [ class "first-row-column-row section", attribute "data-name" "channels" ]
-                    [ header []
-                        [ text "Channels" ]
-                    , div [ class "scrollable-items" ]
-                        []
-                    , div [ class "add-item" ]
-                        [ text "Add a card..." ]
-                    ]
+                [ viewSection "first-row-column-row" "customer-relationships" "Customer Relationships"
+                , viewSection "first-row-column-row" "channels" "Channels"
                 ]
-            , div [ class "first-row-column section", attribute "data-name" "customer-segments" ]
-                [ header []
-                    [ text "Customer Segments" ]
-                , div [ class "scrollable-items" ]
-                    []
-                , div [ class "add-item" ]
-                    [ text "Add a card..." ]
-                ]
+            , viewSection "first-row-column" "customer-segments" "Customer Segments"
             ]
         , div [ class "second-row" ]
-            [ div [ class "second-row-column section", attribute "data-name" "cost-structure" ]
-                [ header []
-                    [ text "Cost Structure" ]
-                , div [ class "scrollable-items" ]
-                    []
-                , div [ class "add-item" ]
-                    [ text "Add a card..." ]
-                ]
-            , div [ class "second-row-column section", attribute "data-name" "revenue-streams" ]
-                [ header []
-                    [ text "Revenue Streams" ]
-                , div [ class "scrollable-items" ]
-                    []
-                , div [ class "add-item" ]
-                    [ text "Add a card..." ]
-                ]
+            [ viewSection "second-row-column" "coost-structure" "Cost Structure"
+            , viewSection "second-row-column" "revenue-streams" "Revenue Streams"
             ]
         ]
 
