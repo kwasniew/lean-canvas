@@ -2,7 +2,7 @@ module LeanCanvas exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (class, attribute, type_, href, draggable)
-
+import Html.Events exposing (..)
 
 type alias Model =
     { sections : List String
@@ -20,14 +20,18 @@ init =
     ( initialModel, Cmd.none )
 
 
-viewSection : String -> String -> String -> Html Msg
-viewSection cssClass dataAttribute headerText =
+toHeader : String -> String
+toHeader dataAttribute =
+  (String.split "-" dataAttribute) |> List.map String.toUpper |> String.join " "
+
+viewSection : String -> String -> Html Msg
+viewSection cssClass dataAttribute =
     div [ class (cssClass ++ " section"), attribute "data-name" dataAttribute ]
         [ header []
-            [ text headerText ]
+            [ text (toHeader dataAttribute) ]
         , div [ class "scrollable-items" ]
             []
-        , div [ class "add-item" ]
+        , div [ class "add-item", onClick EnableAddCard ]
             [ text "Add a card..." ]
         ]
 
@@ -50,29 +54,31 @@ view model =
             , text "    "
             ]
         , div [ class "first-row" ]
-            [ viewSection "first-row-column" "key-partners" "Key Partners"
+            [ viewSection "first-row-column" "key-partners"
             , div [ class "first-row-column" ]
-                [ viewSection "first-row-column-row" "key-activities" "Key Activities"
-                , viewSection "first-row-column-row" "key-resources" "Key Resources"
+                [ viewSection "first-row-column-row" "key-activities"
+                , viewSection "first-row-column-row" "key-resources"
                 ]
-            , viewSection "first-row-column" "value-proposition" "Value Proposition"
+            , viewSection "first-row-column" "value-proposition"
             , div [ class "first-row-column" ]
-                [ viewSection "first-row-column-row" "customer-relationships" "Customer Relationships"
-                , viewSection "first-row-column-row" "channels" "Channels"
+                [ viewSection "first-row-column-row" "customer-relationships"
+                , viewSection "first-row-column-row" "channels"
                 ]
-            , viewSection "first-row-column" "customer-segments" "Customer Segments"
+            , viewSection "first-row-column" "customer-segments"
             ]
         , div [ class "second-row" ]
-            [ viewSection "second-row-column" "coost-structure" "Cost Structure"
-            , viewSection "second-row-column" "revenue-streams" "Revenue Streams"
+            [ viewSection "second-row-column" "cost-structure"
+            , viewSection "second-row-column" "revenue-streams" 
             ]
         ]
 
 
 type Msg
-    = Add
+    = EnableAddCard
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( model, Cmd.none )
+    case msg of
+      EnableAddCard ->
+        ( model, Cmd.none )
