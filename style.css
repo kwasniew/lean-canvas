@@ -1,0 +1,133 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+html, body {
+    height: 97%;
+    box-sizing: border-box;
+}
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+body {
+    display: flex;
+    padding: 20px;
+}
+
+.main {
+    flex: 1;
+    border: 2px solid black;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.first-row {
+    flex-basis: 75%;
+
+    display: flex;
+    flex-direction: row;
+}
+
+.second-row {
+    border-top: 2px solid black;
+    flex-basis: 25%;
+
+    display: flex;
+    flex-direction: row;
+}
+
+.first-row-column {
+    flex-basis: 20%;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.first-row-column:not(:last-child) {
+    border-right: 2px solid black;
+}
+
+.first-row-column-row {
+    flex-basis: 50%;
+}
+
+.first-row-column-row:not(:last-child) {
+    border-bottom: 2px solid black;
+}
+
+.second-row-column {
+    flex-basis: 50%;
+}
+
+.second-row-column:not(:last-child) {
+    border-right: 2px solid black;
+}
+
+.section {
+    padding: 10px;
+
+    display:flex;
+    flex-direction: column;
+}
+
+header {
+    font-weight: bold;
+    margin: 2px;
+}
+
+.add-item {
+    padding: 5px;
+}
+
+.add-item:hover {
+    background-color: darkgrey;
+}
+
+.card {
+    background-color: #FFF;
+    position: relative;
+    padding: 6px 8px;
+    border: 1px solid black;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.new-card-input, .edit-card-input, .sortable-placeholder {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    display: block;
+    width: 100%;
+    padding: 6px 8px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border-radius: 3px;
+    font-size: 1em;
+}
+
+.scrollable-items {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.delete-button {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background-color: lightblue;
+    padding-left: 3px;
+    padding-right: 3px;
+    vertical-align: middle;
+}
+
+.sortable-placeholder {
+    background: lightgray;
+}
+
+.template {
+    display: none;
+}
