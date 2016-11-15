@@ -6,7 +6,9 @@ import Html.Events exposing (..)
 
 
 type alias Model =
-    { sections : List Section }
+    { sections : List Section
+    , addCardSection : String
+    }
 
 
 type alias Section =
@@ -27,6 +29,7 @@ initialModel =
         , { name = "cost-structure" }
         , { name = "revenue-streams" }
         ]
+    , addCardSection = ""
     }
 
 
@@ -54,16 +57,26 @@ toHeader dataAttribute =
     (String.split "-" dataAttribute) |> List.map String.toUpper |> String.join " "
 
 
-viewSection : String -> Section -> Html Msg
-viewSection cssClass section =
+viewSection : Model -> String -> Section -> Html Msg
+viewSection model cssClass section =
     div [ class (cssClass ++ " section"), attribute "data-name" section.name ]
         [ header []
             [ text (toHeader section.name) ]
         , div [ class "scrollable-items" ]
             []
-        , div [ class "add-item", onClick EnableAddCard ]
+        , if model.addCardSection == section.name then
+            viewAddCard
+          else
+            text ""
+        , div [ class "add-item", onClick (EnableAddCard section) ]
             [ text "Add a card..." ]
         ]
+
+
+viewAddCard : Html Msg
+viewAddCard =
+    textarea [ class "new-card-input" ]
+        []
 
 
 view : Model -> Html Msg
@@ -74,6 +87,9 @@ view model =
 
         getSectionByName =
             getSection sections
+
+        viewSectionWithModel =
+            viewSection model
     in
         div [ class "main" ]
             [ div [ class "template card" ]
@@ -85,37 +101,32 @@ view model =
                         ]
                     ]
                 ]
-            , div [ class "template new-card" ]
-                [ input [ type_ "text" ]
-                    []
-                , text "    "
-                ]
             , div [ class "first-row" ]
-                [ viewSection "first-row-column" (getSectionByName "key-partners")
+                [ viewSectionWithModel "first-row-column" (getSectionByName "key-partners")
                 , div [ class "first-row-column" ]
-                    [ viewSection "first-row-column-row" (getSectionByName "key-activities")
-                    , viewSection "first-row-column-row" (getSectionByName "key-resources")
+                    [ viewSectionWithModel "first-row-column-row" (getSectionByName "key-activities")
+                    , viewSectionWithModel "first-row-column-row" (getSectionByName "key-resources")
                     ]
-                , viewSection "first-row-column" (getSectionByName "value-proposition")
+                , viewSectionWithModel "first-row-column" (getSectionByName "value-proposition")
                 , div [ class "first-row-column" ]
-                    [ viewSection "first-row-column-row" (getSectionByName "customer-relationships")
-                    , viewSection "first-row-column-row" (getSectionByName "channels")
+                    [ viewSectionWithModel "first-row-column-row" (getSectionByName "customer-relationships")
+                    , viewSectionWithModel "first-row-column-row" (getSectionByName "channels")
                     ]
-                , viewSection "first-row-column" (getSectionByName "customer-segments")
+                , viewSectionWithModel "first-row-column" (getSectionByName "customer-segments")
                 ]
             , div [ class "second-row" ]
-                [ viewSection "second-row-column" (getSectionByName "cost-structure")
-                , viewSection "second-row-column" (getSectionByName "revenue-streams")
+                [ viewSectionWithModel "second-row-column" (getSectionByName "cost-structure")
+                , viewSectionWithModel "second-row-column" (getSectionByName "revenue-streams")
                 ]
             ]
 
 
 type Msg
-    = EnableAddCard
+    = EnableAddCard Section
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        EnableAddCard ->
-            ( model, Cmd.none )
+        EnableAddCard section ->
+            ( { model | addCardSection = section.name }, Cmd.none )
