@@ -13,21 +13,22 @@ type alias Model =
 
 type alias Section =
     { name : String
+    , class : String
     }
 
 
 initialModel : Model
 initialModel =
     { sections =
-        [ { name = "key-partners" }
-        , { name = "key-activities" }
-        , { name = "key-resources" }
-        , { name = "value-proposition" }
-        , { name = "customer-relationships" }
-        , { name = "channels" }
-        , { name = "customer-segments" }
-        , { name = "cost-structure" }
-        , { name = "revenue-streams" }
+        [ { name = "key-partners", class = "first-row-column" }
+        , { name = "key-activities", class = "first-row-column-row" }
+        , { name = "key-resources", class = "first-row-column-row" }
+        , { name = "value-proposition", class = "first-row-column" }
+        , { name = "customer-relationships", class = "first-row-column-row" }
+        , { name = "channels", class = "first-row-column-row" }
+        , { name = "customer-segments", class = "first-row-column" }
+        , { name = "cost-structure", class = "second-row-column" }
+        , { name = "revenue-streams", class = "second-row-column" }
         ]
     , addCardSection = ""
     }
@@ -44,7 +45,7 @@ getSection sections name =
                 s
 
             Nothing ->
-                { name = "default-section" }
+                { name = "default-section", class = "" }
 
 
 init : ( Model, Cmd Msg )
@@ -57,9 +58,9 @@ toHeader dataAttribute =
     (String.split "-" dataAttribute) |> List.map String.toUpper |> String.join " "
 
 
-viewSection : Model -> String -> Section -> Html Msg
-viewSection model cssClass section =
-    div [ class (cssClass ++ " section"), attribute "data-name" section.name ]
+viewSection : Model -> Section -> Html Msg
+viewSection model section =
+    div [ class (section.class ++ " section"), attribute "data-name" section.name ]
         [ header []
             [ text (toHeader section.name) ]
         , div [ class "scrollable-items" ]
@@ -102,21 +103,21 @@ view model =
                     ]
                 ]
             , div [ class "first-row" ]
-                [ viewSectionWithModel "first-row-column" (getSectionByName "key-partners")
+                [ viewSectionWithModel (getSectionByName "key-partners")
                 , div [ class "first-row-column" ]
-                    [ viewSectionWithModel "first-row-column-row" (getSectionByName "key-activities")
-                    , viewSectionWithModel "first-row-column-row" (getSectionByName "key-resources")
+                    [ viewSectionWithModel (getSectionByName "key-activities")
+                    , viewSectionWithModel (getSectionByName "key-resources")
                     ]
-                , viewSectionWithModel "first-row-column" (getSectionByName "value-proposition")
+                , viewSectionWithModel (getSectionByName "value-proposition")
                 , div [ class "first-row-column" ]
-                    [ viewSectionWithModel "first-row-column-row" (getSectionByName "customer-relationships")
-                    , viewSectionWithModel "first-row-column-row" (getSectionByName "channels")
+                    [ viewSectionWithModel (getSectionByName "customer-relationships")
+                    , viewSectionWithModel (getSectionByName "channels")
                     ]
-                , viewSectionWithModel "first-row-column" (getSectionByName "customer-segments")
+                , viewSectionWithModel (getSectionByName "customer-segments")
                 ]
             , div [ class "second-row" ]
-                [ viewSectionWithModel "second-row-column" (getSectionByName "cost-structure")
-                , viewSectionWithModel "second-row-column" (getSectionByName "revenue-streams")
+                [ viewSectionWithModel (getSectionByName "cost-structure")
+                , viewSectionWithModel (getSectionByName "revenue-streams")
                 ]
             ]
 
