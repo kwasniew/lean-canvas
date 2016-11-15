@@ -15,6 +15,7 @@ type alias Model =
 type alias Section =
     { name : String
     , class : String
+    , cards : List String
     }
 
 
@@ -27,15 +28,15 @@ type alias EntryCard =
 initialModel : Model
 initialModel =
     { sections =
-        [ { name = "key-partners", class = "first-row-column" }
-        , { name = "key-activities", class = "first-row-column-row" }
-        , { name = "key-resources", class = "first-row-column-row" }
-        , { name = "value-proposition", class = "first-row-column" }
-        , { name = "customer-relationships", class = "first-row-column-row" }
-        , { name = "channels", class = "first-row-column-row" }
-        , { name = "customer-segments", class = "first-row-column" }
-        , { name = "cost-structure", class = "second-row-column" }
-        , { name = "revenue-streams", class = "second-row-column" }
+        [ { name = "key-partners", class = "first-row-column", cards = [] }
+        , { name = "key-activities", class = "first-row-column-row", cards = [] }
+        , { name = "key-resources", class = "first-row-column-row", cards = [] }
+        , { name = "value-proposition", class = "first-row-column", cards = [] }
+        , { name = "customer-relationships", class = "first-row-column-row", cards = [] }
+        , { name = "channels", class = "first-row-column-row", cards = [] }
+        , { name = "customer-segments", class = "first-row-column", cards = [] }
+        , { name = "cost-structure", class = "second-row-column", cards = [] }
+        , { name = "revenue-streams", class = "second-row-column", cards = [] }
         ]
     , entryCard = { section = "", text = " " }
     }
@@ -52,7 +53,7 @@ getSection sections name =
                 s
 
             Nothing ->
-                { name = "default-section", class = "" }
+                { name = "default-section", class = "", cards = [] }
 
 
 init : ( Model, Cmd Msg )
@@ -71,7 +72,7 @@ viewSection model section =
         [ header []
             [ text (toHeader section.name) ]
         , div [ class "scrollable-items" ]
-            []
+            (List.map viewCard section.cards)
         , if model.entryCard.section == section.name then
             viewAddCard section
           else
@@ -99,6 +100,16 @@ viewAddCard section =
         []
 
 
+viewCard txt =
+    div [ class "card", draggable "true" ]
+        [ text txt
+        , div [ class "delete-button" ]
+            [ a [ href "#" ]
+                [ text "x" ]
+            ]
+        ]
+
+
 view : Model -> Html Msg
 view model =
     let
@@ -112,16 +123,7 @@ view model =
             viewSection model
     in
         div [ class "main" ]
-            [ div [ class "template card" ]
-                [ div [ class "card", draggable "true" ]
-                    [ text "{{text}}            "
-                    , div [ class "delete-button" ]
-                        [ a [ href "#" ]
-                            [ text "x" ]
-                        ]
-                    ]
-                ]
-            , div [ class "first-row" ]
+            [ div [ class "first-row" ]
                 [ viewSectionWithModel (getSectionByName "key-partners")
                 , div [ class "first-row-column" ]
                     [ viewSectionWithModel (getSectionByName "key-activities")
@@ -147,6 +149,14 @@ type Msg
     | UpdateEntryCard String
 
 
+addCard : EntryCard -> Section -> Section
+addCard entryCard section =
+    if entryCard.section == section.name then
+        { section | cards = section.cards ++ [ entryCard.text ] }
+    else
+        section
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -154,7 +164,7 @@ update msg model =
             ( { model | entryCard = { section = section.name, text = " " } }, Cmd.none )
 
         AddCard ->
-            ( model, Cmd.none )
+            ( { model | sections = List.map (addCard model.entryCard) model.sections }, Cmd.none )
 
         UpdateEntryCard str ->
             ( { model | entryCard = { section = model.entryCard.section, text = str } }, Cmd.none )
