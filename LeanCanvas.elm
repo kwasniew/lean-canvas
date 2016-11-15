@@ -3,17 +3,24 @@ module LeanCanvas exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (class, attribute, type_, href, draggable)
 import Html.Events exposing (..)
+import Json.Decode as Json
 
 
 type alias Model =
     { sections : List Section
-    , addCardSection : String
+    , entryCard : EntryCard
     }
 
 
 type alias Section =
     { name : String
     , class : String
+    }
+
+
+type alias EntryCard =
+    { section : String
+    , text : String
     }
 
 
@@ -30,7 +37,7 @@ initialModel =
         , { name = "cost-structure", class = "second-row-column" }
         , { name = "revenue-streams", class = "second-row-column" }
         ]
-    , addCardSection = ""
+    , entryCard = { section = "", text = " " }
     }
 
 
@@ -65,8 +72,8 @@ viewSection model section =
             [ text (toHeader section.name) ]
         , div [ class "scrollable-items" ]
             []
-        , if model.addCardSection == section.name then
-            viewAddCard
+        , if model.entryCard.section == section.name then
+            viewAddCard section
           else
             text ""
         , div [ class "add-item", onClick (EnableAddCard section) ]
@@ -74,9 +81,21 @@ viewSection model section =
         ]
 
 
-viewAddCard : Html Msg
-viewAddCard =
-    textarea [ class "new-card-input" ]
+onEnter : Msg -> Attribute Msg
+onEnter msg =
+    let
+        isEnter code =
+            if code == 13 then
+                Json.succeed msg
+            else
+                Json.fail "not ENTER"
+    in
+        on "keydown" (Json.andThen isEnter keyCode)
+
+
+viewAddCard : Section -> Html Msg
+viewAddCard section =
+    textarea [ class "new-card-input", onEnter AddCard, onInput UpdateEntryCard ]
         []
 
 
@@ -124,10 +143,18 @@ view model =
 
 type Msg
     = EnableAddCard Section
+    | AddCard
+    | UpdateEntryCard String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         EnableAddCard section ->
-            ( { model | addCardSection = section.name }, Cmd.none )
+            ( { model | entryCard = { section = section.name, text = " " } }, Cmd.none )
+
+        AddCard ->
+            ( model, Cmd.none )
+
+        UpdateEntryCard str ->
+            ( { model | entryCard = { section = model.entryCard.section, text = str } }, Cmd.none )
