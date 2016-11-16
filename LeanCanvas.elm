@@ -1,11 +1,12 @@
 module LeanCanvas exposing (..)
 
 import Html exposing (..)
-import Html.Attributes exposing (class, attribute, type_, href, draggable)
+import Html.Attributes exposing (class, attribute, type_, href, draggable, autofocus, value)
 import Html.Events exposing (..)
 import Json.Decode as Json
 import Dom
 import Task
+import String
 
 
 type alias Model =
@@ -40,7 +41,7 @@ initialModel =
         , { name = "cost-structure", class = "second-row-column", cards = [] }
         , { name = "revenue-streams", class = "second-row-column", cards = [] }
         ]
-    , entryCard = { section = "", text = " " }
+    , entryCard = { section = "", text = "" }
     }
 
 
@@ -76,7 +77,7 @@ viewSection model section =
         , div [ class "scrollable-items" ]
             (List.map viewCard section.cards)
         , if model.entryCard.section == section.name then
-            viewAddCard model.entryCard.text
+            viewAddCard (Debug.log "entry card text" model.entryCard.text)
           else
             text ""
         , div [ class "add-item", onClick (EnableAddCard section) ]
@@ -95,11 +96,21 @@ onEnter msg =
     in
         on "keydown" (Json.andThen isEnter keyCode)
 
+-- onTextInput tagger =
+--   let
+--     isNotEnter val =
+--       if (String.contains "\n" val) then
+--         Json.succeed (Debug.log "isithere" "")
+--       else
+--         Json.succeed val
+--   in
+--     on "input" (Json.map tagger (Json.andThen isNotEnter targetValue))
 
 viewAddCard : String -> Html Msg
 viewAddCard txt =
-    textarea [ Html.Attributes.id "new-card", class "new-card-input", onInput UpdateEntryCard, onEnter AddCard ]
-        [ text txt ]
+
+    input [ Html.Attributes.id "new-card", class "new-card-input", onInput UpdateEntryCard, onEnter AddCard, autofocus True, value txt ]
+        [ ]
 
 
 viewCard txt =
@@ -165,8 +176,9 @@ update msg model =
     case msg of
         NoOp ->
           (model, Cmd.none)
+
         EnableAddCard section ->
-            ( { model | entryCard = { section = section.name, text = " " } }, Task.attempt (\_ -> NoOp) (Dom.focus "new-card") )
+            ( { model | entryCard = { section = section.name, text = "" } }, Task.attempt (\_ -> NoOp) (Dom.focus "new-card") )
 
         AddCard ->
           let
