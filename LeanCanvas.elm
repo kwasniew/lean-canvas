@@ -94,23 +94,13 @@ onEnter msg =
             else
                 Json.fail "not ENTER"
     in
-        on "keydown" (Json.andThen isEnter keyCode)
+        on "keyup" (Json.andThen isEnter keyCode)
 
--- onTextInput tagger =
---   let
---     isNotEnter val =
---       if (String.contains "\n" val) then
---         Json.succeed (Debug.log "isithere" "")
---       else
---         Json.succeed val
---   in
---     on "input" (Json.map tagger (Json.andThen isNotEnter targetValue))
 
 viewAddCard : String -> Html Msg
 viewAddCard txt =
-
-    input [ Html.Attributes.id "new-card", class "new-card-input", onInput UpdateEntryCard, onEnter AddCard, autofocus True, value txt ]
-        [ ]
+    textarea [ Html.Attributes.id "new-card", class "new-card-input", onInput UpdateEntryCard, onEnter AddCard, autofocus True, value txt ]
+        []
 
 
 viewCard txt =
@@ -175,20 +165,22 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         NoOp ->
-          (model, Cmd.none)
+            ( model, Cmd.none )
 
         EnableAddCard section ->
             ( { model | entryCard = { section = section.name, text = "" } }, Task.attempt (\_ -> NoOp) (Dom.focus "new-card") )
 
         AddCard ->
-          let
-            entryCard = model.entryCard
-          in
-            ( { model
-              | sections = (List.map (addCard entryCard) model.sections)
-              , entryCard = { section = entryCard.section, text = "" }
-              }
-              , Cmd.none )
+            let
+                entryCard =
+                    model.entryCard
+            in
+                ( { model
+                    | sections = (List.map (addCard entryCard) model.sections)
+                    , entryCard = { section = entryCard.section, text = "" }
+                  }
+                , Cmd.none
+                )
 
         UpdateEntryCard str ->
-            ( { model | entryCard = { section = model.entryCard.section, text = str }  }, Cmd.none )
+            ( { model | entryCard = { section = model.entryCard.section, text = str } }, Cmd.none )
