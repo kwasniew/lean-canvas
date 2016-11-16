@@ -4,6 +4,8 @@ import Html exposing (..)
 import Html.Attributes exposing (class, attribute, type_, href, draggable)
 import Html.Events exposing (..)
 import Json.Decode as Json
+import Dom
+import Task
 
 
 type alias Model =
@@ -74,7 +76,7 @@ viewSection model section =
         , div [ class "scrollable-items" ]
             (List.map viewCard section.cards)
         , if model.entryCard.section == section.name then
-            viewAddCard section
+            viewAddCard model.entryCard.text
           else
             text ""
         , div [ class "add-item", onClick (EnableAddCard section) ]
@@ -94,10 +96,10 @@ onEnter msg =
         on "keydown" (Json.andThen isEnter keyCode)
 
 
-viewAddCard : Section -> Html Msg
-viewAddCard section =
-    textarea [ class "new-card-input", onEnter AddCard, onInput UpdateEntryCard ]
-        []
+viewAddCard : String -> Html Msg
+viewAddCard txt =
+    textarea [ Html.Attributes.id "new-card", class "new-card-input", onInput UpdateEntryCard, onEnter AddCard ]
+        [ text txt ]
 
 
 viewCard txt =
@@ -147,6 +149,7 @@ type Msg
     = EnableAddCard Section
     | AddCard
     | UpdateEntryCard String
+    | NoOp
 
 
 addCard : EntryCard -> Section -> Section
@@ -160,11 +163,20 @@ addCard entryCard section =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        NoOp ->
+          (model, Cmd.none)
         EnableAddCard section ->
-            ( { model | entryCard = { section = section.name, text = " " } }, Cmd.none )
+            ( { model | entryCard = { section = section.name, text = " " } }, Task.attempt (\_ -> NoOp) (Dom.focus "new-card") )
 
         AddCard ->
-            ( { model | sections = List.map (addCard model.entryCard) model.sections }, Cmd.none )
+          let
+            entryCard = model.entryCard
+          in
+            ( { model
+              | sections = (List.map (addCard entryCard) model.sections)
+              , entryCard = { section = entryCard.section, text = "" }
+              }
+              , Cmd.none )
 
         UpdateEntryCard str ->
-            ( { model | entryCard = { section = model.entryCard.section, text = str } }, Cmd.none )
+            ( { model | entryCard = { section = model.entryCard.section, text = str }  }, Cmd.none )
