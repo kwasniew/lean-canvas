@@ -11,7 +11,8 @@ import Dict
 
 
 type alias Model =
-    { sections : List Section
+    { uid : Int
+    , sections : List Section
     , entryCard : EntryCard
     }
 
@@ -19,19 +20,27 @@ type alias Model =
 type alias Section =
     { name : String
     , class : String
-    , cards : List String
+    , cards : List Card
     }
 
 
 type alias EntryCard =
     { section : String
     , text : String
+    , id : Int
+    }
+
+
+type alias Card =
+    { text : String
+    , id : Int
     }
 
 
 initialModel : Model
 initialModel =
-    { sections =
+    { uid = 0
+    , sections =
         [ { name = "key-partners", class = "first-row-column", cards = [] }
         , { name = "key-activities", class = "first-row-column-row", cards = [] }
         , { name = "key-resources", class = "first-row-column-row", cards = [] }
@@ -42,7 +51,7 @@ initialModel =
         , { name = "cost-structure", class = "second-row-column", cards = [] }
         , { name = "revenue-streams", class = "second-row-column", cards = [] }
         ]
-    , entryCard = { section = "", text = "" }
+    , entryCard = { section = "", text = "", id = 0 }
     }
 
 
@@ -115,9 +124,10 @@ viewAddCard txt =
         []
 
 
-viewCard txt =
+viewCard : Card -> Html Msg
+viewCard card =
     div [ class "card", draggable "true" ]
-        [ text txt
+        [ text card.text
         , div [ class "delete-button" ]
             [ a [ href "#" ]
                 [ text "x" ]
@@ -166,10 +176,10 @@ type Msg
     | NoOp
 
 
-addCard : EntryCard -> Section -> Section
-addCard entryCard section =
-    if entryCard.section == section.name then
-        { section | cards = section.cards ++ [ entryCard.text ] }
+addCard : Model -> Section -> Section
+addCard model section =
+    if model.entryCard.section == section.name then
+        { section | cards = section.cards ++ [ Card model.entryCard.text model.uid ] }
     else
         section
 
@@ -181,7 +191,7 @@ update msg model =
             ( model, Cmd.none )
 
         EnableAddCard section ->
-            ( { model | entryCard = { section = section.name, text = "" } }, Task.attempt (\_ -> NoOp) (Dom.focus "new-card") )
+            ( { model | entryCard = { section = section.name, text = "", id = 0 } }, Task.attempt (\_ -> NoOp) (Dom.focus "new-card") )
 
         AddCard ->
             let
@@ -189,14 +199,15 @@ update msg model =
                     model.entryCard
             in
                 ( { model
-                    | sections = (List.map (addCard entryCard) model.sections)
-                    , entryCard = { section = entryCard.section, text = "" }
+                    | sections = (List.map (addCard model) model.sections)
+                    , uid = model.uid + 1
+                    , entryCard = { section = entryCard.section, text = "", id = model.uid }
                   }
                 , Cmd.none
                 )
 
         RemoveEntryCard ->
-            ( { model | entryCard = { section = "", text = "" } }, Cmd.none )
+            ( { model | entryCard = { section = "", text = "", id = 0 } }, Cmd.none )
 
         UpdateEntryCard str ->
-            ( { model | entryCard = { section = model.entryCard.section, text = str } }, Cmd.none )
+            ( { model | entryCard = { section = model.entryCard.section, text = str, id = model.entryCard.id } }, Cmd.none )

@@ -1,2 +1,4 @@
 custom event handlers (e.g. isEnter)
 generic event handler for keys (regular keyup/keydown event override each other)
+textarea should use value not a child text
+focus on element modeled as task in update
