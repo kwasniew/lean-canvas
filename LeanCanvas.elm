@@ -128,7 +128,7 @@ viewCard : Card -> Html Msg
 viewCard card =
     div [ class "card", draggable "true" ]
         [ text card.text
-        , div [ class "delete-button" ]
+        , div [ class "delete-button", onClick (DeleteCard card.id) ]
             [ a [ href "#" ]
                 [ text "x" ]
             ]
@@ -171,6 +171,7 @@ view model =
 type Msg
     = EnableAddCard Section
     | AddCard
+    | DeleteCard Int
     | RemoveEntryCard
     | UpdateEntryCard String
     | NoOp
@@ -182,6 +183,11 @@ addCard model section =
         { section | cards = section.cards ++ [ Card model.entryCard.text model.uid ] }
     else
         section
+
+
+deleteCard : Int -> Section -> Section
+deleteCard id section =
+    { section | cards = List.filter (\card -> card.id /= id) section.cards }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -205,6 +211,9 @@ update msg model =
                   }
                 , Cmd.none
                 )
+
+        DeleteCard id ->
+            ( { model | sections = (List.map (deleteCard id) model.sections) }, Cmd.none )
 
         RemoveEntryCard ->
             ( { model | entryCard = { section = "", text = "", id = 0 } }, Cmd.none )
