@@ -1,0 +1,2 @@
+custom event handlers (e.g. isEnter)
+generic event handler for keys (regular keyup/keydown event override each other)

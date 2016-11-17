@@ -7,6 +7,7 @@ import Json.Decode as Json
 import Dom
 import Task
 import String
+import Dict
 
 
 type alias Model =
@@ -85,21 +86,32 @@ viewSection model section =
         ]
 
 
-onEnter : Msg -> Attribute Msg
-onEnter msg =
+onKeyUp config =
     let
-        isEnter code =
-            if code == 13 then
-                Json.succeed msg
-            else
-                Json.fail "not ENTER"
+        isCode code =
+            case (Dict.get code config) of
+                Just msg ->
+                    Json.succeed msg
+
+                Nothing ->
+                    Json.fail "not the right key code"
     in
-        on "keyup" (Json.andThen isEnter keyCode)
+        on "keyup" (Json.andThen isCode keyCode)
+
+
+enter : Int
+enter =
+    13
+
+
+escape : Int
+escape =
+    27
 
 
 viewAddCard : String -> Html Msg
 viewAddCard txt =
-    textarea [ Html.Attributes.id "new-card", class "new-card-input", onInput UpdateEntryCard, onEnter AddCard, autofocus True, value txt ]
+    textarea [ Html.Attributes.id "new-card", class "new-card-input", onKeyUp (Dict.fromList [ ( enter, AddCard ), ( escape, RemoveEntryCard ) ]), onInput UpdateEntryCard, autofocus True, value txt ]
         []
 
 
@@ -149,6 +161,7 @@ view model =
 type Msg
     = EnableAddCard Section
     | AddCard
+    | RemoveEntryCard
     | UpdateEntryCard String
     | NoOp
 
@@ -181,6 +194,9 @@ update msg model =
                   }
                 , Cmd.none
                 )
+
+        RemoveEntryCard ->
+            ( { model | entryCard = { section = "", text = "" } }, Cmd.none )
 
         UpdateEntryCard str ->
             ( { model | entryCard = { section = model.entryCard.section, text = str } }, Cmd.none )
