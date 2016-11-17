@@ -120,7 +120,7 @@ escape =
 
 viewAddCard : String -> Html Msg
 viewAddCard txt =
-    textarea [ Html.Attributes.id "new-card", class "new-card-input", onKeyUp (Dict.fromList [ ( enter, AddCard ), ( escape, RemoveEntryCard ) ]), onInput UpdateEntryCard, autofocus True, value txt ]
+    textarea [ Html.Attributes.id "new-card", class "new-card-input", onKeyUp (Dict.fromList [ ( enter, AddCard ), ( escape, DeleteEntryCard ) ]), onInput UpdateEntryCard, autofocus True, value txt ]
         []
 
 
@@ -172,7 +172,7 @@ type Msg
     = EnableAddCard Section
     | AddCard
     | DeleteCard Int
-    | RemoveEntryCard
+    | DeleteEntryCard
     | UpdateEntryCard String
     | NoOp
 
@@ -215,7 +215,7 @@ update msg model =
         DeleteCard id ->
             ( { model | sections = (List.map (deleteCard id) model.sections) }, Cmd.none )
 
-        RemoveEntryCard ->
+        DeleteEntryCard ->
             ( { model | entryCard = { section = "", text = "", id = 0 } }, Cmd.none )
 
         UpdateEntryCard str ->
