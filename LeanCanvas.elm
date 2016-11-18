@@ -243,10 +243,10 @@ update msg model =
             ( model, Cmd.none )
 
         AbortUpdateCard id ->
-            ( { model | sections = (List.map (setEditMode id False) model.sections) } , Cmd.none )
+            ( { model | sections = (List.map (setEditMode id False) model.sections) }, Cmd.none )
 
         UpdateCard id txt ->
-             (model, Cmd.none )
+            ( model, Cmd.none )
 
         DeleteCard id ->
             ( { model | sections = (List.map (deleteCard id) model.sections) }, Cmd.none )
