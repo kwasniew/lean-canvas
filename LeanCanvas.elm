@@ -180,28 +180,31 @@ update msg model =
             ( model, Cmd.none )
 
         EnableAddCard section ->
-            ( { model | entryCard = { section = section, text = "", id = 0 }
-                      , cards = (List.map (\card -> { card | editing = False }) model.cards)
+            ( { model
+                | entryCard = { section = section, text = "", id = 0 }
+                , cards = (List.map (\card -> { card | editing = False }) model.cards)
               }
-              , Task.attempt (\_ -> NoOp) (Dom.focus "new-card") )
+            , Task.attempt (\_ -> NoOp) (Dom.focus "new-card")
+            )
 
         AddCard ->
             let
                 entryCard =
                     model.entryCard
+
                 entryText =
                     String.trimRight entryCard.text
             in
                 if String.length entryText > 0 then
-                ( { model
-                    | cards = model.cards ++ [ Card model.entryCard.section entryText model.uid False ]
-                    , uid = model.uid + 1
-                    , entryCard = { section = entryCard.section, text = "", id = model.uid }
-                  }
-                , Cmd.none
-                )
+                    ( { model
+                        | cards = model.cards ++ [ Card model.entryCard.section entryText model.uid False ]
+                        , uid = model.uid + 1
+                        , entryCard = { section = entryCard.section, text = "", id = model.uid }
+                      }
+                    , Cmd.none
+                    )
                 else
-                  ( { model | entryCard = { entryCard | text = "" } }, Cmd.none )
+                    ( { model | entryCard = { entryCard | text = "" } }, Cmd.none )
 
         EnableEditCard card ->
             ( { model
