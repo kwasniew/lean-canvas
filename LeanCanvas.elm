@@ -34,6 +34,7 @@ type alias EntryCard =
 type alias Card =
     { text : String
     , id : Int
+    , editing : Bool
     }
 
 
@@ -87,7 +88,7 @@ viewSection model section =
         , div [ class "scrollable-items" ]
             (List.map viewCard section.cards)
         , if model.entryCard.section == section.name then
-            viewAddCard (Debug.log "entry card text" model.entryCard.text)
+            viewAddCard model.entryCard.text
           else
             text ""
         , div [ class "add-item", onClick (EnableAddCard section) ]
@@ -126,13 +127,18 @@ viewAddCard txt =
 
 viewCard : Card -> Html Msg
 viewCard card =
-    div [ class "card", draggable "true" ]
-        [ text card.text
-        , div [ class "delete-button", onClick (DeleteCard card.id) ]
-            [ a [ href "#" ]
-                [ text "x" ]
+    if card.editing == True then
+        textarea
+            [ Html.Attributes.id "new-card", class "edit-card-input", autofocus True, value card.text ]
+            []
+    else
+        div [ class "card", draggable "true", onDoubleClick (EnableEditCard card.id) ]
+            [ text card.text
+            , div [ class "delete-button", onClick (DeleteCard card.id) ]
+                [ a [ href "#" ]
+                    [ text "x" ]
+                ]
             ]
-        ]
 
 
 view : Model -> Html Msg
@@ -171,6 +177,7 @@ view model =
 type Msg
     = EnableAddCard Section
     | AddCard
+    | EnableEditCard Int
     | DeleteCard Int
     | DeleteEntryCard
     | UpdateEntryCard String
@@ -180,7 +187,7 @@ type Msg
 addCard : Model -> Section -> Section
 addCard model section =
     if model.entryCard.section == section.name then
-        { section | cards = section.cards ++ [ Card model.entryCard.text model.uid ] }
+        { section | cards = section.cards ++ [ Card model.entryCard.text model.uid False ] }
     else
         section
 
@@ -188,6 +195,20 @@ addCard model section =
 deleteCard : Int -> Section -> Section
 deleteCard id section =
     { section | cards = List.filter (\card -> card.id /= id) section.cards }
+
+
+editCard id section =
+    { section
+        | cards =
+            List.map
+                (\card ->
+                    if card.id == id then
+                        { card | editing = True }
+                    else
+                        card
+                )
+                section.cards
+    }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -211,6 +232,9 @@ update msg model =
                   }
                 , Cmd.none
                 )
+
+        EnableEditCard id ->
+            ( { model | sections = (List.map (editCard id) model.sections) }, Task.attempt (\_ -> NoOp) (Dom.focus "new-card") )
 
         DeleteCard id ->
             ( { model | sections = (List.map (deleteCard id) model.sections) }, Cmd.none )
