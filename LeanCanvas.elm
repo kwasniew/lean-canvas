@@ -129,7 +129,7 @@ viewCard : Card -> Html Msg
 viewCard card =
     if card.editing == True then
         textarea
-            [ Html.Attributes.id "new-card", class "edit-card-input", autofocus True, value card.text ]
+            [ Html.Attributes.id "new-card", class "edit-card-input", onKeyUp (Dict.fromList [ ( enter, (ConfirmUpdateCard card.id) ), ( escape, (AbortUpdateCard card.id) ) ]), onInput (UpdateCard card.id), autofocus True, value card.text ]
             []
     else
         div [ class "card", draggable "true", onDoubleClick (EnableEditCard card.id) ]
@@ -178,6 +178,9 @@ type Msg
     = EnableAddCard Section
     | AddCard
     | EnableEditCard Int
+    | ConfirmUpdateCard Int
+    | AbortUpdateCard Int
+    | UpdateCard Int String
     | DeleteCard Int
     | DeleteEntryCard
     | UpdateEntryCard String
@@ -197,13 +200,13 @@ deleteCard id section =
     { section | cards = List.filter (\card -> card.id /= id) section.cards }
 
 
-editCard id section =
+setEditMode id condition section =
     { section
         | cards =
             List.map
                 (\card ->
                     if card.id == id then
-                        { card | editing = True }
+                        { card | editing = condition }
                     else
                         card
                 )
@@ -234,7 +237,16 @@ update msg model =
                 )
 
         EnableEditCard id ->
-            ( { model | sections = (List.map (editCard id) model.sections) }, Task.attempt (\_ -> NoOp) (Dom.focus "new-card") )
+            ( { model | sections = (List.map (setEditMode id True) model.sections) }, Task.attempt (\_ -> NoOp) (Dom.focus "new-card") )
+
+        ConfirmUpdateCard id ->
+            ( model, Cmd.none )
+
+        AbortUpdateCard id ->
+            ( { model | sections = (List.map (setEditMode id False) model.sections) } , Cmd.none )
+
+        UpdateCard id txt ->
+             (model, Cmd.none )
 
         DeleteCard id ->
             ( { model | sections = (List.map (deleteCard id) model.sections) }, Cmd.none )
@@ -243,4 +255,4 @@ update msg model =
             ( { model | entryCard = { section = "", text = "", id = 0 } }, Cmd.none )
 
         UpdateEntryCard str ->
-            ( { model | entryCard = { section = model.entryCard.section, text = str, id = model.entryCard.id } }, Cmd.none )
+            ( { model | entryCard = { section = model.entryCard.section, text = (String.trimRight str), id = model.entryCard.id } }, Cmd.none )
