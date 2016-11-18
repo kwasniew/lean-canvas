@@ -12,15 +12,8 @@ import Dict
 
 type alias Model =
     { uid : Int
-    , sections : List Section
-    , entryCard : EntryCard
-    }
-
-
-type alias Section =
-    { name : String
-    , class : String
     , cards : List Card
+    , entryCard : EntryCard
     }
 
 
@@ -32,7 +25,8 @@ type alias EntryCard =
 
 
 type alias Card =
-    { text : String
+    { section : String
+    , text : String
     , id : Int
     , editing : Bool
     }
@@ -41,33 +35,9 @@ type alias Card =
 initialModel : Model
 initialModel =
     { uid = 0
-    , sections =
-        [ { name = "key-partners", class = "first-row-column", cards = [] }
-        , { name = "key-activities", class = "first-row-column-row", cards = [] }
-        , { name = "key-resources", class = "first-row-column-row", cards = [] }
-        , { name = "value-proposition", class = "first-row-column", cards = [] }
-        , { name = "customer-relationships", class = "first-row-column-row", cards = [] }
-        , { name = "channels", class = "first-row-column-row", cards = [] }
-        , { name = "customer-segments", class = "first-row-column", cards = [] }
-        , { name = "cost-structure", class = "second-row-column", cards = [] }
-        , { name = "revenue-streams", class = "second-row-column", cards = [] }
-        ]
+    , cards = []
     , entryCard = { section = "", text = "", id = 0 }
     }
-
-
-getSection : List Section -> String -> Section
-getSection sections name =
-    let
-        section =
-            List.head (List.filter (\section -> section.name == name) sections)
-    in
-        case section of
-            Just s ->
-                s
-
-            Nothing ->
-                { name = "default-section", class = "", cards = [] }
 
 
 init : ( Model, Cmd Msg )
@@ -80,14 +50,14 @@ toHeader dataAttribute =
     (String.split "-" dataAttribute) |> List.map String.toUpper |> String.join " "
 
 
-viewSection : Model -> Section -> Html Msg
-viewSection model section =
-    div [ class (section.class ++ " section"), attribute "data-name" section.name ]
+viewSection : Model -> String -> String -> Html Msg
+viewSection model section className =
+    div [ class (className ++ " section"), attribute "data-name" section ]
         [ header []
-            [ text (toHeader section.name) ]
+            [ text (toHeader section) ]
         , div [ class "scrollable-items" ]
-            (List.map viewCard section.cards)
-        , if model.entryCard.section == section.name then
+            (List.map viewCard (List.filter (\card -> card.section == section) model.cards))
+        , if model.entryCard.section == section then
             viewAddCard model.entryCard.text
           else
             text ""
@@ -144,38 +114,32 @@ viewCard card =
 view : Model -> Html Msg
 view model =
     let
-        sections =
-            model.sections
-
-        getSectionByName =
-            getSection sections
-
         viewSectionWithModel =
             viewSection model
     in
         div [ class "main" ]
             [ div [ class "first-row" ]
-                [ viewSectionWithModel (getSectionByName "key-partners")
+                [ viewSectionWithModel "key-partners" "first-row-column"
                 , div [ class "first-row-column" ]
-                    [ viewSectionWithModel (getSectionByName "key-activities")
-                    , viewSectionWithModel (getSectionByName "key-resources")
+                    [ viewSectionWithModel "key-activities" "first-row-column-row"
+                    , viewSectionWithModel "key-resources" "first-row-column-row"
                     ]
-                , viewSectionWithModel (getSectionByName "value-proposition")
+                , viewSectionWithModel "value-proposition" "first-row-column"
                 , div [ class "first-row-column" ]
-                    [ viewSectionWithModel (getSectionByName "customer-relationships")
-                    , viewSectionWithModel (getSectionByName "channels")
+                    [ viewSectionWithModel "customer-relationships" "first-row-column-row"
+                    , viewSectionWithModel "channels" "first-row-column-row"
                     ]
-                , viewSectionWithModel (getSectionByName "customer-segments")
+                , viewSectionWithModel "customer-segments" "first-row-column"
                 ]
             , div [ class "second-row" ]
-                [ viewSectionWithModel (getSectionByName "cost-structure")
-                , viewSectionWithModel (getSectionByName "revenue-streams")
+                [ viewSectionWithModel "cost-structure" "second-row-column"
+                , viewSectionWithModel "revenue-streams" "second-row-column"
                 ]
             ]
 
 
 type Msg
-    = EnableAddCard Section
+    = EnableAddCard String
     | AddCard
     | EnableEditCard Int
     | ConfirmUpdateCard Int
@@ -187,31 +151,12 @@ type Msg
     | NoOp
 
 
-addCard : Model -> Section -> Section
-addCard model section =
-    if model.entryCard.section == section.name then
-        { section | cards = section.cards ++ [ Card model.entryCard.text model.uid False ] }
+setEditMode : Int -> Bool -> Card -> Card
+setEditMode id condition card =
+    if card.id == id then
+        { card | editing = condition }
     else
-        section
-
-
-deleteCard : Int -> Section -> Section
-deleteCard id section =
-    { section | cards = List.filter (\card -> card.id /= id) section.cards }
-
-
-setEditMode id condition section =
-    { section
-        | cards =
-            List.map
-                (\card ->
-                    if card.id == id then
-                        { card | editing = condition }
-                    else
-                        card
-                )
-                section.cards
-    }
+        card
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -221,7 +166,7 @@ update msg model =
             ( model, Cmd.none )
 
         EnableAddCard section ->
-            ( { model | entryCard = { section = section.name, text = "", id = 0 } }, Task.attempt (\_ -> NoOp) (Dom.focus "new-card") )
+            ( { model | entryCard = { section = section, text = "", id = 0 } }, Task.attempt (\_ -> NoOp) (Dom.focus "new-card") )
 
         AddCard ->
             let
@@ -229,7 +174,7 @@ update msg model =
                     model.entryCard
             in
                 ( { model
-                    | sections = (List.map (addCard model) model.sections)
+                    | cards = model.cards ++ [ Card model.entryCard.section model.entryCard.text model.uid False ]
                     , uid = model.uid + 1
                     , entryCard = { section = entryCard.section, text = "", id = model.uid }
                   }
@@ -237,19 +182,19 @@ update msg model =
                 )
 
         EnableEditCard id ->
-            ( { model | sections = (List.map (setEditMode id True) model.sections) }, Task.attempt (\_ -> NoOp) (Dom.focus "new-card") )
+            ( { model | cards = (List.map (setEditMode id True) model.cards) }, Task.attempt (\_ -> NoOp) (Dom.focus "new-card") )
 
         ConfirmUpdateCard id ->
             ( model, Cmd.none )
 
         AbortUpdateCard id ->
-            ( { model | sections = (List.map (setEditMode id False) model.sections) }, Cmd.none )
+            ( { model | cards = (List.map (setEditMode id False) model.cards) }, Cmd.none )
 
         UpdateCard id txt ->
             ( model, Cmd.none )
 
         DeleteCard id ->
-            ( { model | sections = (List.map (deleteCard id) model.sections) }, Cmd.none )
+            ( { model | cards = List.filter (\card -> card.id /= id) model.cards }, Cmd.none )
 
         DeleteEntryCard ->
             ( { model | entryCard = { section = "", text = "", id = 0 } }, Cmd.none )
