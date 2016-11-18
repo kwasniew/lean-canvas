@@ -3,3 +3,6 @@ generic event handler for keys (regular keyup/keydown event override each other)
 textarea should use value not a child text
 focus on element modeled as task in update
 use ports for local storage and wait for https://github.com/elm-lang/persistent-cache to be ready
+
+problem: updating nested records
+setting up text editor for code formatting

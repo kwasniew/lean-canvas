@@ -56,7 +56,7 @@ viewSection model section className =
         [ header []
             [ text (toHeader section) ]
         , div [ class "scrollable-items" ]
-            (List.map viewCard (List.filter (\card -> card.section == section) model.cards))
+            (List.map (viewCard model.entryCard) (List.filter (\card -> card.section == section) model.cards))
         , if model.entryCard.section == section then
             viewAddCard model.entryCard.text
           else
@@ -95,14 +95,20 @@ viewAddCard txt =
         []
 
 
-viewCard : Card -> Html Msg
-viewCard card =
+viewCard : EntryCard -> Card -> Html Msg
+viewCard entryCard card =
     if card.editing == True then
         textarea
-            [ Html.Attributes.id "new-card", class "edit-card-input", onKeyUp (Dict.fromList [ ( enter, (ConfirmUpdateCard card.id) ), ( escape, (AbortUpdateCard card.id) ) ]), onInput (UpdateCard card.id), autofocus True, value card.text ]
+            [ Html.Attributes.id "new-card"
+            , class "edit-card-input"
+            , onKeyUp (Dict.fromList [ ( enter, ConfirmUpdateCard ), ( escape, (AbortUpdateCard card.id) ) ])
+            , onInput UpdateCard
+            , autofocus True
+            , value entryCard.text
+            ]
             []
     else
-        div [ class "card", draggable "true", onDoubleClick (EnableEditCard card.id) ]
+        div [ class "card", draggable "true", onDoubleClick (EnableEditCard card) ]
             [ text card.text
             , div [ class "delete-button", onClick (DeleteCard card.id) ]
                 [ a [ href "#" ]
@@ -141,10 +147,10 @@ view model =
 type Msg
     = EnableAddCard String
     | AddCard
-    | EnableEditCard Int
-    | ConfirmUpdateCard Int
+    | EnableEditCard Card
+    | ConfirmUpdateCard
     | AbortUpdateCard Int
-    | UpdateCard Int String
+    | UpdateCard String
     | DeleteCard Int
     | DeleteEntryCard
     | UpdateEntryCard String
@@ -155,6 +161,14 @@ setEditMode : Int -> Bool -> Card -> Card
 setEditMode id condition card =
     if card.id == id then
         { card | editing = condition }
+    else
+        card
+
+
+saveEditCard : EntryCard -> Card -> Card
+saveEditCard entryCard card =
+    if card.id == entryCard.id then
+        { card | editing = False, text = (String.trimRight entryCard.text) }
     else
         card
 
@@ -174,24 +188,33 @@ update msg model =
                     model.entryCard
             in
                 ( { model
-                    | cards = model.cards ++ [ Card model.entryCard.section model.entryCard.text model.uid False ]
+                    | cards = model.cards ++ [ Card model.entryCard.section (String.trimRight model.entryCard.text) model.uid False ]
                     , uid = model.uid + 1
                     , entryCard = { section = entryCard.section, text = "", id = model.uid }
                   }
                 , Cmd.none
                 )
 
-        EnableEditCard id ->
-            ( { model | cards = (List.map (setEditMode id True) model.cards) }, Task.attempt (\_ -> NoOp) (Dom.focus "new-card") )
+        EnableEditCard card ->
+            ( { model
+                | cards = (List.map (setEditMode card.id True) model.cards)
+                , entryCard = { section = "", text = card.text, id = card.id }
+              }
+            , Task.attempt (\_ -> NoOp) (Dom.focus "new-card")
+            )
 
-        ConfirmUpdateCard id ->
-            ( model, Cmd.none )
+        ConfirmUpdateCard ->
+            ( { model | cards = List.map (saveEditCard model.entryCard) model.cards }, Cmd.none )
 
         AbortUpdateCard id ->
             ( { model | cards = (List.map (setEditMode id False) model.cards) }, Cmd.none )
 
-        UpdateCard id txt ->
-            ( model, Cmd.none )
+        UpdateCard txt ->
+            let
+                modelEntryCard =
+                    model.entryCard
+            in
+                ( { model | entryCard = { modelEntryCard | text = txt } }, Cmd.none )
 
         DeleteCard id ->
             ( { model | cards = List.filter (\card -> card.id /= id) model.cards }, Cmd.none )
@@ -199,5 +222,5 @@ update msg model =
         DeleteEntryCard ->
             ( { model | entryCard = { section = "", text = "", id = 0 } }, Cmd.none )
 
-        UpdateEntryCard str ->
-            ( { model | entryCard = { section = model.entryCard.section, text = (String.trimRight str), id = model.entryCard.id } }, Cmd.none )
+        UpdateEntryCard txt ->
+            ( { model | entryCard = { section = model.entryCard.section, text = txt, id = model.entryCard.id } }, Cmd.none )
