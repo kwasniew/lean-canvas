@@ -11,6 +11,7 @@ app.get('/canvas/:id', function(req, res, next) {
 });
 
 app.post('/canvas', function(req, res, next) {
+  console.log(req.body);
   res.send('post');
 });
 

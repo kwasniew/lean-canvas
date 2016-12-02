@@ -57,6 +57,17 @@ initialModel =
     }
 
 
+modelToJson : Model -> String
+modelToJson model =
+    JE.object
+        [ ( "uid", JE.int model.uid )
+        , ( "name", JE.string model.name )
+        , ( "editing", JE.bool model.editing )
+        , ( "oldName", JE.string model.name )
+        ]
+        |> JE.encode 4
+
+
 init : ( Model, Cmd Msg )
 init =
     ( initialModel, Cmd.none )
@@ -309,7 +320,7 @@ update msg model =
             ( { model | editing = False, name = model.oldName }, Cmd.none )
 
         Save ->
-            ( model, Http.send Saved <| Http.post "/canvas" Http.emptyBody (JD.string) )
+            ( model, Http.send Saved <| Http.post "/canvas" (Http.stringBody "application/json" (modelToJson model)) (JD.string) )
 
         Saved _ ->
             ( model, Cmd.none )
