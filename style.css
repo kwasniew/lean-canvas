@@ -106,7 +106,7 @@ header {
     cursor: pointer;
 }
 
-.new-card-input, .edit-card-input, .sortable-placeholder, .header input {
+.new-card-input, .edit-card-input, .header input {
     margin-top: 5px;
     margin-bottom: 5px;
     display: block;
@@ -116,6 +116,12 @@ header {
     margin-bottom: 5px;
     border-radius: 3px;
     font-size: 1em;
+}
+
+.ghost {
+  opacity: 0.4;
+  color: lightgrey;
+  background-color: lightgrey;
 }
 
 .scrollable-items {

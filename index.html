@@ -20,6 +20,7 @@
     var els = document.querySelectorAll(".scrollable-items");
     Array.from(els).forEach(function(el) {
       var sortable = Sortable.create(el, {
+        ghostClass: 'ghost',
         onUpdate: function (evt) {
           var itemEl = evt.item;
           console.log({cardId: parseInt(evt.item.dataset.id, 10), from: evt.oldIndex, to: evt.newIndex});
