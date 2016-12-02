@@ -22,6 +22,7 @@
       var sortable = Sortable.create(el, {
         onUpdate: function (evt) {
           var itemEl = evt.item;
+          console.log({cardId: parseInt(evt.item.dataset.id, 10), from: evt.oldIndex, to: evt.newIndex});
           app.ports.drags.send({cardId: parseInt(evt.item.dataset.id, 10), from: evt.oldIndex, to: evt.newIndex});
         }
       });

@@ -75,6 +75,7 @@ viewSection model section className =
         ]
 
 
+onKeyUp : Dict.Dict Int a -> Attribute a
 onKeyUp config =
     let
         isCode code =
@@ -247,16 +248,22 @@ update msg model =
             ( { model | entryCard = { section = model.entryCard.section, text = txt, id = model.entryCard.id } }, Cmd.none )
 
         MoveCard move ->
-            let
-                modifiedCards =
-                    case (List.head <| (List.filter (\card -> card.id == move.cardId) model.cards)) of
-                        Just found ->
-                            moveCard model.cards found move.to
+            ( { model | cards = reorderCards model.cards move }, Cmd.none )
 
-                        Nothing ->
-                            model.cards
-            in
-                ( { model | cards = modifiedCards }, Cmd.none )
+
+reorderCards : List Card -> Move -> List Card
+reorderCards cards move =
+    case findCardById cards move.cardId of
+        Just found ->
+            moveCard cards found move.to
+
+        Nothing ->
+            cards
+
+
+findCardById : List Card -> Int -> Maybe Card
+findCardById cards id =
+    List.head <| (List.filter (\card -> card.id == id) cards)
 
 
 moveCard : List Card -> Card -> Int -> List Card
@@ -267,15 +274,16 @@ moveCard list fromCard toIndex =
     in
         case toCardMaybe of
             Just toCard ->
-                List.map
-                    (\card ->
+                List.foldr
+                    (\card result ->
                         if card == toCard then
-                            fromCard
+                            toCard :: fromCard :: result
                         else if card == fromCard then
-                            toCard
+                            result
                         else
-                            card
+                            card :: result
                     )
+                    []
                     list
 
             Nothing ->
