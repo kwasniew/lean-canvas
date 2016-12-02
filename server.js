@@ -4,6 +4,8 @@ var bodyParser = require('body-parser');
 var app = express();
 app.use(bodyParser.json());
 
+app.use(express.static('public'));
+
 app.get('/canvas/:id', function(req, res, next) {
   res.send('get');
 });
