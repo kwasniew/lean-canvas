@@ -148,3 +148,7 @@ header {
 .template {
     display: none;
 }
+
+.saveButton {
+  margin: 20px;
+}

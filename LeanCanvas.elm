@@ -3,13 +3,15 @@ port module LeanCanvas exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (class, id, attribute, type_, href, draggable, autofocus, value)
 import Html.Events exposing (..)
-import Json.Decode as Json
+import Json.Decode as JD
+import Json.Encode as JE
 import Dom
 import Task
 import String
 import Dict
 import Array
 import Maybe
+import Http
 
 
 type alias Move =
@@ -87,12 +89,12 @@ onKeyUp config =
         isCode code =
             case (Dict.get code config) of
                 Just msg ->
-                    Json.succeed msg
+                    JD.succeed msg
 
                 Nothing ->
-                    Json.fail "not the right key code"
+                    JD.fail "not the right key code"
     in
-        on "keyup" (Json.andThen isCode keyCode)
+        on "keyup" (JD.andThen isCode keyCode)
 
 
 enter : Int
@@ -182,6 +184,13 @@ view model =
                     , viewSectionWithModel "revenue-streams" "second-row-column"
                     ]
                 ]
+            , div []
+                [ button
+                    [ class "saveButton"
+                    , onClick Save
+                    ]
+                    [ text "Save" ]
+                ]
             ]
 
 
@@ -200,6 +209,8 @@ type Msg
     | UpdateName String
     | ConfirmEditName
     | AbortEditName
+    | Save
+    | Saved (Result Http.Error String)
     | NoOp
 
 
@@ -296,6 +307,12 @@ update msg model =
 
         AbortEditName ->
             ( { model | editing = False, name = model.oldName }, Cmd.none )
+
+        Save ->
+            ( model, Http.send Saved <| Http.post "/canvas" Http.emptyBody (JD.string) )
+
+        Saved _ ->
+            ( model, Cmd.none )
 
 
 reorderCards : List Card -> Move -> List Card
