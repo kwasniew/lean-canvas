@@ -1,0 +1,19 @@
+{
+  "name": "lean_canvas_elm",
+  "version": "1.0.0",
+  "description": "",
+  "main": "elm.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/kwasniew/lean_canvas_elm.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/kwasniew/lean_canvas_elm#readme",
+  "dependencies": {
+    "sortablejs": "1.5.0-rc1"
+  }
+}

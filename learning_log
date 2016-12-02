@@ -6,3 +6,29 @@ use ports for local storage and wait for https://github.com/elm-lang/persistent-
 
 problem: updating nested records
 setting up text editor for code formatting
+implementing drag and drop
+
+equivalent:
+Just <| TabDrag xy xy
+Just (TabDrag xy xy)
+
+pure update without tuple
+
+expressions over statements
+
+subscriptions - global things that happen on the page e.g. mouse movements
+
+
+autocomplete from rxjs to elm
+drag and drop
+
+
+atom dev env setup: https://github.com/knowthen/elm/blob/master/DEVSETUP.md
+
+
+port dnd to js
+project name
+save to server
+simple node backend
+styling: http://tachyons.io/ + icons
+elm navigation

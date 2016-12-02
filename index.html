@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <title>Lean Canvas</title>
   <script type="text/javascript" src="/elm.js"></script>
+  <script src="node_modules/sortablejs/Sortable.min.js"></script>
   <link rel="stylesheet" href="/reset.css">
   <link rel="stylesheet" href="/style.css">
 </head>
@@ -14,5 +15,14 @@
 </body>
 <script>
   var app = Elm.Main.embed(document.querySelector("body"));
+
+  setTimeout(function() {
+    var els = document.querySelectorAll(".scrollable-items");
+    Array.from(els).forEach(function(el) {
+      var sortable = Sortable.create(el);
+    })
+
+  }, 0);
+
 </script>
 </html>

@@ -1,7 +1,7 @@
 module LeanCanvas exposing (..)
 
 import Html exposing (..)
-import Html.Attributes exposing (class, attribute, type_, href, draggable, autofocus, value)
+import Html.Attributes exposing (class, id, attribute, type_, href, draggable, autofocus, value)
 import Html.Events exposing (..)
 import Json.Decode as Json
 import Dom
