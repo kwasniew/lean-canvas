@@ -107,7 +107,15 @@ escape =
 
 viewAddCard : String -> Html Msg
 viewAddCard txt =
-    textarea [ Html.Attributes.id "new-card", class "new-card-input", onKeyUp (Dict.fromList [ ( enter, AddCard ), ( escape, DeleteEntryCard ) ]), onInput UpdateEntryCard, autofocus True, value txt ]
+    textarea
+        [ Html.Attributes.id "new-card"
+        , class "new-card-input"
+        , onBlur DeleteEntryCard
+        , onKeyUp (Dict.fromList [ ( enter, AddCard ), ( escape, DeleteEntryCard ) ])
+        , onInput UpdateEntryCard
+        , autofocus True
+        , value txt
+        ]
         []
 
 
@@ -117,6 +125,7 @@ viewCard entryCard card =
         textarea
             [ Html.Attributes.id "new-card"
             , class "edit-card-input"
+            , onBlur (AbortUpdateCard card.id)
             , onKeyUp (Dict.fromList [ ( enter, ConfirmUpdateCard ), ( escape, (AbortUpdateCard card.id) ) ])
             , onInput UpdateCard
             , autofocus True
@@ -147,6 +156,7 @@ view model =
                         , value model.name
                         , Html.Attributes.id "edit-name"
                         , onInput UpdateName
+                        , onBlur AbortEditName
                         , onKeyUp (Dict.fromList [ ( enter, ConfirmEditName ), ( escape, AbortEditName ) ])
                         ]
                         []

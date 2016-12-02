@@ -27,7 +27,6 @@ drag and drop
 atom dev env setup: https://github.com/knowthen/elm/blob/master/DEVSETUP.md
 
 
-port dnd to js - dropzone
 input field lost focus is = cancel
 save to server
 simple node backend
