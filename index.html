@@ -19,7 +19,12 @@
   setTimeout(function() {
     var els = document.querySelectorAll(".scrollable-items");
     Array.from(els).forEach(function(el) {
-      var sortable = Sortable.create(el);
+      var sortable = Sortable.create(el, {
+        onUpdate: function (evt) {
+          var itemEl = evt.item;
+          app.ports.drags.send({cardId: parseInt(evt.item.dataset.id, 10), from: evt.oldIndex, to: evt.newIndex});
+        }
+      });
     })
 
   }, 0);

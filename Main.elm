@@ -10,5 +10,5 @@ main =
         { view = LeanCanvas.view
         , update = LeanCanvas.update
         , init = LeanCanvas.init
-        , subscriptions = \_ -> Sub.none
+        , subscriptions = LeanCanvas.subscriptions
         }

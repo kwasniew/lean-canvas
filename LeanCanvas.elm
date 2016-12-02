@@ -1,4 +1,4 @@
-module LeanCanvas exposing (..)
+port module LeanCanvas exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (class, id, attribute, type_, href, draggable, autofocus, value)
@@ -8,6 +8,15 @@ import Dom
 import Task
 import String
 import Dict
+import Array
+import Maybe
+
+
+type alias Move =
+    { cardId : Int
+    , from : Int
+    , to : Int
+    }
 
 
 type alias Model =
@@ -108,7 +117,7 @@ viewCard entryCard card =
             ]
             []
     else
-        div [ class "card", draggable "true", onDoubleClick (EnableEditCard card) ]
+        div [ class "card", draggable "true", (attribute "data-id" (toString card.id)), onDoubleClick (EnableEditCard card) ]
             [ text card.text
             , div [ class "delete-button", onClick (DeleteCard card.id) ]
                 [ a [ href "#" ]
@@ -154,6 +163,7 @@ type Msg
     | DeleteCard Int
     | DeleteEntryCard
     | UpdateEntryCard String
+    | MoveCard Move
     | NoOp
 
 
@@ -235,3 +245,46 @@ update msg model =
 
         UpdateEntryCard txt ->
             ( { model | entryCard = { section = model.entryCard.section, text = txt, id = model.entryCard.id } }, Cmd.none )
+
+        MoveCard move ->
+            let
+                modifiedCards =
+                    case (List.head <| (List.filter (\card -> card.id == move.cardId) model.cards)) of
+                        Just found ->
+                            moveCard model.cards found move.to
+
+                        Nothing ->
+                            model.cards
+            in
+                ( { model | cards = modifiedCards }, Cmd.none )
+
+
+moveCard : List Card -> Card -> Int -> List Card
+moveCard list fromCard toIndex =
+    let
+        toCardMaybe =
+            (Array.get toIndex (Array.fromList list))
+    in
+        case toCardMaybe of
+            Just toCard ->
+                List.map
+                    (\card ->
+                        if card == toCard then
+                            fromCard
+                        else if card == fromCard then
+                            toCard
+                        else
+                            card
+                    )
+                    list
+
+            Nothing ->
+                list
+
+
+port drags : (Move -> msg) -> Sub msg
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    drags MoveCard
