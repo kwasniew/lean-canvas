@@ -18,6 +18,7 @@ expressions over statements
 
 subscriptions - global things that happen on the page e.g. mouse movements
 
+how to make reusable editable field
 
 autocomplete from rxjs to elm
 drag and drop
@@ -27,10 +28,11 @@ atom dev env setup: https://github.com/knowthen/elm/blob/master/DEVSETUP.md
 
 
 port dnd to js - dropzone
-project name
+input field lost focus is = cancel
 save to server
 simple node backend
 elm navigation
+tests
 styling: http://tachyons.io/ + icons
 personal map
 generic structure

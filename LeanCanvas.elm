@@ -292,7 +292,7 @@ reorderCards : List Card -> Move -> List Card
 reorderCards cards move =
     case findCardById cards move.cardId of
         Just found ->
-            moveCard cards found move.to
+            moveCard cards found move
 
         Nothing ->
             cards
@@ -303,18 +303,20 @@ findCardById cards id =
     List.head <| (List.filter (\card -> card.id == id) cards)
 
 
-moveCard : List Card -> Card -> Int -> List Card
-moveCard list fromCard toIndex =
+moveCard : List Card -> Card -> Move -> List Card
+moveCard list fromCard move =
     let
         toCardMaybe =
-            (Array.get toIndex (Array.fromList list))
+            (Array.get move.to (Array.fromList list))
     in
         case toCardMaybe of
             Just toCard ->
                 List.foldr
                     (\card result ->
-                        if card == toCard then
+                        if card == toCard && (move.from < move.to) then
                             toCard :: fromCard :: result
+                        else if card == toCard && (move.from > move.to) then
+                            fromCard :: toCard :: result
                         else if card == fromCard then
                             result
                         else
