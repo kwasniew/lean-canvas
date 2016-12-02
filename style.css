@@ -10,12 +10,23 @@ html, body {
     box-sizing: inherit;
 }
 body {
-    display: flex;
     padding: 20px;
 }
 
 .main {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.header {
     flex: 1;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.canvas {
+    flex: 20;
     border: 2px solid black;
 
     display: flex;
@@ -95,7 +106,7 @@ header {
     cursor: pointer;
 }
 
-.new-card-input, .edit-card-input, .sortable-placeholder {
+.new-card-input, .edit-card-input, .sortable-placeholder, .header input {
     margin-top: 5px;
     margin-bottom: 5px;
     display: block;

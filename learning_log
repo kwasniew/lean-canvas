@@ -26,7 +26,7 @@ drag and drop
 atom dev env setup: https://github.com/knowthen/elm/blob/master/DEVSETUP.md
 
 
-port dnd to js
+port dnd to js - dropzone
 project name
 save to server
 simple node backend

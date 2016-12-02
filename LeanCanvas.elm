@@ -23,6 +23,9 @@ type alias Model =
     { uid : Int
     , cards : List Card
     , entryCard : EntryCard
+    , name : String
+    , editing : Bool
+    , oldName : String
     }
 
 
@@ -46,6 +49,9 @@ initialModel =
     { uid = 0
     , cards = []
     , entryCard = { section = "", text = "", id = 0 }
+    , name = "Business Model Canvas"
+    , editing = False
+    , oldName = "Business Model Canvas"
     }
 
 
@@ -134,22 +140,37 @@ view model =
             viewSection model
     in
         div [ class "main" ]
-            [ div [ class "first-row" ]
-                [ viewSectionWithModel "key-partners" "first-row-column"
-                , div [ class "first-row-column" ]
-                    [ viewSectionWithModel "key-activities" "first-row-column-row"
-                    , viewSectionWithModel "key-resources" "first-row-column-row"
-                    ]
-                , viewSectionWithModel "value-proposition" "first-row-column"
-                , div [ class "first-row-column" ]
-                    [ viewSectionWithModel "customer-relationships" "first-row-column-row"
-                    , viewSectionWithModel "channels" "first-row-column-row"
-                    ]
-                , viewSectionWithModel "customer-segments" "first-row-column"
+            [ h2 [ class "header", onDoubleClick EnableEditName ]
+                [ if model.editing == True then
+                    input
+                        [ type_ "text"
+                        , value model.name
+                        , Html.Attributes.id "edit-name"
+                        , onInput UpdateName
+                        , onKeyUp (Dict.fromList [ ( enter, ConfirmEditName ), ( escape, AbortEditName ) ])
+                        ]
+                        []
+                  else
+                    text model.name
                 ]
-            , div [ class "second-row" ]
-                [ viewSectionWithModel "cost-structure" "second-row-column"
-                , viewSectionWithModel "revenue-streams" "second-row-column"
+            , div [ class "canvas" ]
+                [ div [ class "first-row" ]
+                    [ viewSectionWithModel "key-partners" "first-row-column"
+                    , div [ class "first-row-column" ]
+                        [ viewSectionWithModel "key-activities" "first-row-column-row"
+                        , viewSectionWithModel "key-resources" "first-row-column-row"
+                        ]
+                    , viewSectionWithModel "value-proposition" "first-row-column"
+                    , div [ class "first-row-column" ]
+                        [ viewSectionWithModel "customer-relationships" "first-row-column-row"
+                        , viewSectionWithModel "channels" "first-row-column-row"
+                        ]
+                    , viewSectionWithModel "customer-segments" "first-row-column"
+                    ]
+                , div [ class "second-row" ]
+                    [ viewSectionWithModel "cost-structure" "second-row-column"
+                    , viewSectionWithModel "revenue-streams" "second-row-column"
+                    ]
                 ]
             ]
 
@@ -165,6 +186,10 @@ type Msg
     | DeleteEntryCard
     | UpdateEntryCard String
     | MoveCard Move
+    | EnableEditName
+    | UpdateName String
+    | ConfirmEditName
+    | AbortEditName
     | NoOp
 
 
@@ -249,6 +274,18 @@ update msg model =
 
         MoveCard move ->
             ( { model | cards = reorderCards model.cards move }, Cmd.none )
+
+        EnableEditName ->
+            ( { model | editing = True }, Task.attempt (\_ -> NoOp) (Dom.focus "edit-name") )
+
+        UpdateName name ->
+            ( { model | name = name }, Cmd.none )
+
+        ConfirmEditName ->
+            ( { model | editing = False, oldName = model.name }, Cmd.none )
+
+        AbortEditName ->
+            ( { model | editing = False, name = model.oldName }, Cmd.none )
 
 
 reorderCards : List Card -> Move -> List Card
