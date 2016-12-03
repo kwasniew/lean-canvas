@@ -4,6 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (class, id, attribute, type_, href, draggable, autofocus, value)
 import Html.Events exposing (..)
 import Json.Decode as JD
+import Json.Decode.Pipeline exposing (decode, required, optional, custom)
 import Json.Encode as JE
 import Dom
 import Task
@@ -65,6 +66,41 @@ initialModel page =
     }
 
 
+entryCardDecoder : JD.Decoder EntryCard
+entryCardDecoder =
+    decode EntryCard
+        |> required "section" JD.string
+        |> required "text" JD.string
+        |> required "id" JD.int
+
+
+cardDecoder : JD.Decoder Card
+cardDecoder =
+    decode Card
+        |> required "section" JD.string
+        |> required "text" JD.string
+        |> required "id" JD.int
+        |> required "editing" JD.bool
+
+
+pageDecoder : JD.Decoder Page
+pageDecoder =
+    decode Existing
+        |> required "id" JD.string
+
+
+modelDecoder : JD.Decoder Model
+modelDecoder =
+    decode Model
+        |> required "uid" JD.int
+        |> required "cards" (JD.list cardDecoder)
+        |> required "entryCard" entryCardDecoder
+        |> required "name" JD.string
+        |> required "editing" JD.bool
+        |> required "oldName" JD.string
+        |> custom (JD.map Existing (JD.field "id" JD.string))
+
+
 modelToJson : Model -> String
 modelToJson model =
     JE.object
@@ -111,7 +147,7 @@ init location =
                 ( model, Cmd.none )
 
             Existing guid ->
-                ( model, Http.send Fetched <| Http.getString ("/canvas/" ++ guid) )
+                ( model, Http.send Fetched <| Http.get ("/canvas/" ++ guid) modelDecoder )
 
 
 toHeader : String -> String
@@ -263,7 +299,7 @@ type Msg
     | AbortEditName
     | Save
     | Saved (Result Http.Error String)
-    | Fetched (Result Http.Error String)
+    | Fetched (Result Http.Error Model)
     | ChangePage Page
     | NoOp
 
@@ -372,11 +408,12 @@ update msg model =
             ( { model | page = page }, Cmd.none )
 
         Fetched response ->
-            let
-                resp =
-                    Debug.log "response" response
-            in
-                ( model, Cmd.none )
+            case response of
+                Ok fetchedModel ->
+                    ( fetchedModel, Cmd.none )
+
+                _ ->
+                    ( model, Cmd.none )
 
 
 reorderCards : List Card -> Move -> List Card
