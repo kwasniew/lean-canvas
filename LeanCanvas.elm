@@ -12,6 +12,12 @@ import Dict
 import Array
 import Maybe
 import Http
+import Navigation exposing (..)
+
+
+type Page
+    = New
+    | Existing String
 
 
 type alias Move =
@@ -28,6 +34,7 @@ type alias Model =
     , name : String
     , editing : Bool
     , oldName : String
+    , page : Page
     }
 
 
@@ -46,14 +53,15 @@ type alias Card =
     }
 
 
-initialModel : Model
-initialModel =
+initialModel : Page -> Model
+initialModel page =
     { uid = 0
     , cards = []
     , entryCard = { section = "", text = "", id = 0 }
     , name = "Business Model Canvas"
     , editing = False
     , oldName = "Business Model Canvas"
+    , page = page
     }
 
 
@@ -89,9 +97,21 @@ modelToJson model =
         |> JE.encode 4
 
 
-init : ( Model, Cmd Msg )
-init =
-    ( initialModel, Cmd.none )
+init : Location -> ( Model, Cmd Msg )
+init location =
+    let
+        page =
+            hashToPage location.hash
+
+        model =
+            initialModel page
+    in
+        case page of
+            New ->
+                ( model, Cmd.none )
+
+            Existing guid ->
+                ( model, Http.send Fetched <| Http.getString ("/canvas/" ++ guid) )
 
 
 toHeader : String -> String
@@ -243,6 +263,8 @@ type Msg
     | AbortEditName
     | Save
     | Saved (Result Http.Error String)
+    | Fetched (Result Http.Error String)
+    | ChangePage Page
     | NoOp
 
 
@@ -346,6 +368,16 @@ update msg model =
         Saved _ ->
             ( model, Cmd.none )
 
+        ChangePage page ->
+            ( { model | page = page }, Cmd.none )
+
+        Fetched response ->
+            let
+                resp =
+                    Debug.log "response" response
+            in
+                ( model, Cmd.none )
+
 
 reorderCards : List Card -> Move -> List Card
 reorderCards cards move =
@@ -394,3 +426,20 @@ port drags : (Move -> msg) -> Sub msg
 subscriptions : Model -> Sub Msg
 subscriptions model =
     drags MoveCard
+
+
+hashToPage : String -> Page
+hashToPage hash =
+    case hash of
+        "" ->
+            New
+
+        val ->
+            Existing (String.dropLeft 1 val)
+
+
+locationToMsg : Location -> Msg
+locationToMsg location =
+    location.hash
+        |> hashToPage
+        |> ChangePage
