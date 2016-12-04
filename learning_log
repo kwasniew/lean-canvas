@@ -26,10 +26,21 @@ drag and drop
 
 atom dev env setup: https://github.com/knowthen/elm/blob/master/DEVSETUP.md
 
-move card bug with duplicates
+move card bug with duplicates - write some tests
 separate backend and configurable frontend with flags
+delegation
+disable save button on pending request
 persistent store
 tests
 styling: http://tachyons.io/ + icons
 personal map
 generic structure
+
+
+Learning objectives:
+- navigation and history tracking
+- integration with JS DnD through ports
+- elm to JSON and JSON to elm
+- HTTP handling
+- keyboard shortcuts handling
+- elm refactoring capabilities (start with one big file and test splitting)
