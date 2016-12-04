@@ -2,7 +2,8 @@ module Tests exposing (..)
 
 import Test exposing (..)
 import Expect
-import LeanCanvas exposing (Card, Move, reorderCards)
+import Model exposing (Card, Move)
+import Update exposing (reorderCards)
 
 
 expectReordered : List Int -> Move -> List Int -> Expect.Expectation
