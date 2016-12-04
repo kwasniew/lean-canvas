@@ -228,8 +228,8 @@ viewCard entryCard card =
     else
         div [ class "card", draggable "true", (attribute "data-id" (toString card.id)), onDoubleClick (EnableEditCard card) ]
             [ text card.text
-            , div [ class "delete-button", onClick (DeleteCard card.id) ]
-                [ a [ href "#" ]
+            , div [ class "delete-button" ]
+                [ span [ onClick (DeleteCard card.id) ]
                     [ text "x" ]
                 ]
             ]
@@ -451,12 +451,15 @@ update msg model =
                     ( { model | error = Just (toString error) }, Cmd.none )
 
         ChangePage page ->
-            case page of
-                New ->
-                    ( initialModel New, Cmd.none )
+            if page == model.page then
+                ( model, Cmd.none )
+            else
+                case page of
+                    New ->
+                        ( initialModel New, Cmd.none )
 
-                Existing guid ->
-                    ( { model | page = page }, Http.send Fetched <| Http.get ("/canvas/" ++ guid) modelDecoder )
+                    Existing guid ->
+                        ( { model | page = page }, Http.send Fetched <| Http.get ("/canvas/" ++ guid) modelDecoder )
 
         Navigate page ->
             ( model, newUrl <| pageToHash page )
@@ -466,8 +469,12 @@ update msg model =
                 Ok fetchedModel ->
                     ( fetchedModel, Cmd.none )
 
-                _ ->
-                    ( model, Cmd.none )
+                Result.Err error ->
+                    let
+                        emptyModel =
+                            initialModel New
+                    in
+                        ( { emptyModel | error = Just (toString error) }, Cmd.none )
 
 
 reorderCards : List Card -> Move -> List Card

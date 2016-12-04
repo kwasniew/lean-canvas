@@ -12,8 +12,9 @@ var db = {};
 app.get('/canvas/:id', function(req, res, next) {
   if(db[req.params.id]) {
     res.json(db[req.params.id]);
+  } else {
+    res.status(404).send('not found');
   }
-  res.status(404);
 });
 
 app.post('/canvas', function(req, res, next) {

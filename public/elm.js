@@ -14198,7 +14198,12 @@ var _kwasniew$lean_canvas_elm$LeanCanvas$update = F2(
 			case 'Saved':
 				var _p14 = _p8._0;
 				if (_p14.ctor === 'Ok') {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+					return {
+						ctor: '_Tuple2',
+						_0: model,
+						_1: _elm_lang$navigation$Navigation$newUrl(
+							A2(_elm_lang$core$Basics_ops['++'], '#', _p14._0))
+					};
 				} else {
 					return {
 						ctor: '_Tuple2',
@@ -14213,27 +14218,31 @@ var _kwasniew$lean_canvas_elm$LeanCanvas$update = F2(
 				}
 			case 'ChangePage':
 				var _p16 = _p8._0;
-				var _p15 = _p16;
-				if (_p15.ctor === 'New') {
-					return {
-						ctor: '_Tuple2',
-						_0: _kwasniew$lean_canvas_elm$LeanCanvas$initialModel(_kwasniew$lean_canvas_elm$LeanCanvas$New),
-						_1: _elm_lang$core$Platform_Cmd$none
-					};
+				if (_elm_lang$core$Native_Utils.eq(_p16, model.page)) {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				} else {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{page: _p16}),
-						_1: A2(
-							_elm_lang$http$Http$send,
-							_kwasniew$lean_canvas_elm$LeanCanvas$Fetched,
-							A2(
-								_elm_lang$http$Http$get,
-								A2(_elm_lang$core$Basics_ops['++'], '/canvas/', _p15._0),
-								_kwasniew$lean_canvas_elm$LeanCanvas$modelDecoder))
-					};
+					var _p15 = _p16;
+					if (_p15.ctor === 'New') {
+						return {
+							ctor: '_Tuple2',
+							_0: _kwasniew$lean_canvas_elm$LeanCanvas$initialModel(_kwasniew$lean_canvas_elm$LeanCanvas$New),
+							_1: _elm_lang$core$Platform_Cmd$none
+						};
+					} else {
+						return {
+							ctor: '_Tuple2',
+							_0: _elm_lang$core$Native_Utils.update(
+								model,
+								{page: _p16}),
+							_1: A2(
+								_elm_lang$http$Http$send,
+								_kwasniew$lean_canvas_elm$LeanCanvas$Fetched,
+								A2(
+									_elm_lang$http$Http$get,
+									A2(_elm_lang$core$Basics_ops['++'], '/canvas/', _p15._0),
+									_kwasniew$lean_canvas_elm$LeanCanvas$modelDecoder))
+						};
+					}
 				}
 			case 'Navigate':
 				return {
@@ -14247,7 +14256,17 @@ var _kwasniew$lean_canvas_elm$LeanCanvas$update = F2(
 				if (_p17.ctor === 'Ok') {
 					return {ctor: '_Tuple2', _0: _p17._0, _1: _elm_lang$core$Platform_Cmd$none};
 				} else {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+					var emptyModel = _kwasniew$lean_canvas_elm$LeanCanvas$initialModel(_kwasniew$lean_canvas_elm$LeanCanvas$New);
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							emptyModel,
+							{
+								error: _elm_lang$core$Maybe$Just(
+									_elm_lang$core$Basics$toString(_p17._0))
+							}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
 				}
 		}
 	});
@@ -14363,20 +14382,16 @@ var _kwasniew$lean_canvas_elm$LeanCanvas$viewCard = F2(
 						{
 							ctor: '::',
 							_0: _elm_lang$html$Html_Attributes$class('delete-button'),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onClick(
-									_kwasniew$lean_canvas_elm$LeanCanvas$DeleteCard(card.id)),
-								_1: {ctor: '[]'}
-							}
+							_1: {ctor: '[]'}
 						},
 						{
 							ctor: '::',
 							_0: A2(
-								_elm_lang$html$Html$a,
+								_elm_lang$html$Html$span,
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$href('#'),
+									_0: _elm_lang$html$Html_Events$onClick(
+										_kwasniew$lean_canvas_elm$LeanCanvas$DeleteCard(card.id)),
 									_1: {ctor: '[]'}
 								},
 								{

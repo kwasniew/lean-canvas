@@ -26,7 +26,6 @@ drag and drop
 
 atom dev env setup: https://github.com/knowthen/elm/blob/master/DEVSETUP.md
 
-
 move card bug with duplicates
 separate backend and configurable frontend with flags
 persistent store
