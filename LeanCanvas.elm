@@ -4,7 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (class, id, attribute, type_, href, draggable, autofocus, value)
 import Html.Events exposing (..)
 import Json.Decode as JD
-import Json.Decode.Pipeline exposing (decode, required, optional, custom)
+import Json.Decode.Pipeline exposing (decode, required, optional, hardcoded, custom)
 import Json.Encode as JE
 import Dom
 import Task
@@ -36,6 +36,7 @@ type alias Model =
     , editing : Bool
     , oldName : String
     , page : Page
+    , error : Maybe String
     }
 
 
@@ -63,6 +64,7 @@ initialModel page =
     , editing = False
     , oldName = "Business Model Canvas"
     , page = page
+    , error = Nothing
     }
 
 
@@ -99,6 +101,7 @@ modelDecoder =
         |> required "editing" JD.bool
         |> required "oldName" JD.string
         |> custom (JD.map Existing (JD.field "id" JD.string))
+        |> hardcoded Nothing
 
 
 modelToJson : Model -> String
@@ -279,7 +282,20 @@ view model =
                     ]
                     [ text "Save" ]
                 ]
+            , div []
+                [ text (textError model.error)
+                ]
             ]
+
+
+textError : Maybe String -> String
+textError modelError =
+    case modelError of
+        Just error ->
+            error
+
+        _ ->
+            ""
 
 
 type Msg
@@ -401,8 +417,13 @@ update msg model =
         Save ->
             ( model, Http.send Saved <| Http.post "/canvas" (Http.stringBody "application/json" (modelToJson model)) (JD.string) )
 
-        Saved _ ->
-            ( model, Cmd.none )
+        Saved result ->
+            case result of
+                Ok guid ->
+                    ( model, newUrl ("#" ++ guid) )
+
+                Result.Err error ->
+                    ( { model | error = Just (toString error) }, Cmd.none )
 
         ChangePage page ->
             ( { model | page = page }, Cmd.none )

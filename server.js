@@ -20,7 +20,7 @@ app.post('/canvas', function(req, res, next) {
   req.body.id = uuid.v4();
   db[req.body.id] = req.body;
 
-  res.send('saved ' + req.body.id);
+  res.send(req.body.id);
 });
 
 app.listen(process.env.PORT || 3000, function () {

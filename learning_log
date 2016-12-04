@@ -27,8 +27,8 @@ drag and drop
 atom dev env setup: https://github.com/knowthen/elm/blob/master/DEVSETUP.md
 
 move card bug with duplicates
-elm navigation
-load from server
+elm navigation - newUrl
+error handling with save
 persistent store
 tests
 styling: http://tachyons.io/ + icons
