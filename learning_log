@@ -28,7 +28,8 @@ atom dev env setup: https://github.com/knowthen/elm/blob/master/DEVSETUP.md
 
 move card bug with duplicates
 elm navigation - newUrl
-error handling with save
+separate backend and configurable frontend with flags
+update existing record
 persistent store
 tests
 styling: http://tachyons.io/ + icons
