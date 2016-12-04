@@ -14698,31 +14698,27 @@ var _kwasniew$lean_canvas_elm$Update$update = F2(
 				}
 			case 'ChangePage':
 				var _p12 = _p4._0;
-				if (_elm_lang$core$Native_Utils.eq(_p12, model.page)) {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				var _p11 = _p12;
+				if (_p11.ctor === 'New') {
+					return {
+						ctor: '_Tuple2',
+						_0: _kwasniew$lean_canvas_elm$Model$initialModel(_kwasniew$lean_canvas_elm$Model$New),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
 				} else {
-					var _p11 = _p12;
-					if (_p11.ctor === 'New') {
-						return {
-							ctor: '_Tuple2',
-							_0: _kwasniew$lean_canvas_elm$Model$initialModel(_kwasniew$lean_canvas_elm$Model$New),
-							_1: _elm_lang$core$Platform_Cmd$none
-						};
-					} else {
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
-								model,
-								{page: _p12}),
-							_1: A2(
-								_elm_lang$http$Http$send,
-								_kwasniew$lean_canvas_elm$Messages$Fetched,
-								A2(
-									_elm_lang$http$Http$get,
-									A2(_elm_lang$core$Basics_ops['++'], '/canvas/', _p11._0),
-									_kwasniew$lean_canvas_elm$ResponseDecoder$modelDecoder))
-						};
-					}
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{page: _p12}),
+						_1: A2(
+							_elm_lang$http$Http$send,
+							_kwasniew$lean_canvas_elm$Messages$Fetched,
+							A2(
+								_elm_lang$http$Http$get,
+								A2(_elm_lang$core$Basics_ops['++'], '/canvas/', _p11._0),
+								_kwasniew$lean_canvas_elm$ResponseDecoder$modelDecoder))
+					};
 				}
 			case 'Navigate':
 				return {

@@ -126,15 +126,12 @@ update msg model =
                     ( { model | error = Just (toString error) }, Cmd.none )
 
         ChangePage page ->
-            if page == model.page then
-                ( model, Cmd.none )
-            else
-                case page of
-                    New ->
-                        ( initialModel New, Cmd.none )
+            case page of
+                New ->
+                    ( initialModel New, Cmd.none )
 
-                    Existing guid ->
-                        ( { model | page = page }, Http.send Fetched <| Http.get ("/canvas/" ++ guid) modelDecoder )
+                Existing guid ->
+                    ( { model | page = page }, Http.send Fetched <| Http.get ("/canvas/" ++ guid) modelDecoder )
 
         Navigate page ->
             ( model, newUrl <| pageToHash page )
