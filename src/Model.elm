@@ -38,3 +38,16 @@ type alias Card =
     , id : Int
     , editing : Bool
     }
+
+
+initialModel : Page -> Model
+initialModel page =
+    { uid = 0
+    , cards = []
+    , entryCard = { section = "", text = "", id = 0 }
+    , name = "Business Model Canvas"
+    , editing = False
+    , oldName = "Business Model Canvas"
+    , page = page
+    , error = Nothing
+    }

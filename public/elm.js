@@ -13566,6 +13566,18 @@ var _elm_lang$navigation$Navigation$subMap = F2(
 	});
 _elm_lang$core$Native_Platform.effectManagers['Navigation'] = {pkg: 'elm-lang/navigation', init: _elm_lang$navigation$Navigation$init, onEffects: _elm_lang$navigation$Navigation$onEffects, onSelfMsg: _elm_lang$navigation$Navigation$onSelfMsg, tag: 'fx', cmdMap: _elm_lang$navigation$Navigation$cmdMap, subMap: _elm_lang$navigation$Navigation$subMap};
 
+var _kwasniew$lean_canvas_elm$Model$initialModel = function (page) {
+	return {
+		uid: 0,
+		cards: {ctor: '[]'},
+		entryCard: {section: '', text: '', id: 0},
+		name: 'Business Model Canvas',
+		editing: false,
+		oldName: 'Business Model Canvas',
+		page: page,
+		error: _elm_lang$core$Maybe$Nothing
+	};
+};
 var _kwasniew$lean_canvas_elm$Model$Move = F3(
 	function (a, b, c) {
 		return {cardId: a, from: b, to: c};
@@ -13587,190 +13599,7 @@ var _kwasniew$lean_canvas_elm$Model$Existing = function (a) {
 };
 var _kwasniew$lean_canvas_elm$Model$New = {ctor: 'New'};
 
-var _kwasniew$lean_canvas_elm$ResponseDecoder$pageDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'id',
-	_elm_lang$core$Json_Decode$string,
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_kwasniew$lean_canvas_elm$Model$Existing));
-var _kwasniew$lean_canvas_elm$ResponseDecoder$cardDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'editing',
-	_elm_lang$core$Json_Decode$bool,
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'id',
-		_elm_lang$core$Json_Decode$int,
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'text',
-			_elm_lang$core$Json_Decode$string,
-			A3(
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'section',
-				_elm_lang$core$Json_Decode$string,
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_kwasniew$lean_canvas_elm$Model$Card)))));
-var _kwasniew$lean_canvas_elm$ResponseDecoder$entryCardDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'id',
-	_elm_lang$core$Json_Decode$int,
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'text',
-		_elm_lang$core$Json_Decode$string,
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'section',
-			_elm_lang$core$Json_Decode$string,
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_kwasniew$lean_canvas_elm$Model$EntryCard))));
-var _kwasniew$lean_canvas_elm$ResponseDecoder$modelDecoder = A2(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$hardcoded,
-	_elm_lang$core$Maybe$Nothing,
-	A2(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$custom,
-		A2(
-			_elm_lang$core$Json_Decode$map,
-			_kwasniew$lean_canvas_elm$Model$Existing,
-			A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$string)),
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'oldName',
-			_elm_lang$core$Json_Decode$string,
-			A3(
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'editing',
-				_elm_lang$core$Json_Decode$bool,
-				A3(
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'name',
-					_elm_lang$core$Json_Decode$string,
-					A3(
-						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-						'entryCard',
-						_kwasniew$lean_canvas_elm$ResponseDecoder$entryCardDecoder,
-						A3(
-							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-							'cards',
-							_elm_lang$core$Json_Decode$list(_kwasniew$lean_canvas_elm$ResponseDecoder$cardDecoder),
-							A3(
-								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-								'uid',
-								_elm_lang$core$Json_Decode$int,
-								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_kwasniew$lean_canvas_elm$Model$Model)))))))));
-
-var _kwasniew$lean_canvas_elm$LeanCanvas$hashToPage = function (hash) {
-	var _p0 = hash;
-	if (_p0 === '') {
-		return _kwasniew$lean_canvas_elm$Model$New;
-	} else {
-		return _kwasniew$lean_canvas_elm$Model$Existing(
-			A2(_elm_lang$core$String$dropLeft, 1, _p0));
-	}
-};
-var _kwasniew$lean_canvas_elm$LeanCanvas$pageToHash = function (page) {
-	var _p1 = page;
-	if (_p1.ctor === 'New') {
-		return '#';
-	} else {
-		return A2(_elm_lang$core$Basics_ops['++'], '#', _p1._0);
-	}
-};
-var _kwasniew$lean_canvas_elm$LeanCanvas$moveCard = F3(
-	function (list, fromCard, move) {
-		var toCardMaybe = A2(
-			_elm_lang$core$Array$get,
-			move.to,
-			_elm_lang$core$Array$fromList(list));
-		var _p2 = toCardMaybe;
-		if (_p2.ctor === 'Just') {
-			var _p3 = _p2._0;
-			return A3(
-				_elm_lang$core$List$foldr,
-				F2(
-					function (card, result) {
-						return (_elm_lang$core$Native_Utils.eq(card, _p3) && (_elm_lang$core$Native_Utils.cmp(move.from, move.to) < 0)) ? {
-							ctor: '::',
-							_0: _p3,
-							_1: {ctor: '::', _0: fromCard, _1: result}
-						} : ((_elm_lang$core$Native_Utils.eq(card, _p3) && (_elm_lang$core$Native_Utils.cmp(move.from, move.to) > 0)) ? {
-							ctor: '::',
-							_0: fromCard,
-							_1: {ctor: '::', _0: _p3, _1: result}
-						} : (_elm_lang$core$Native_Utils.eq(card, fromCard) ? result : {ctor: '::', _0: card, _1: result}));
-					}),
-				{ctor: '[]'},
-				list);
-		} else {
-			return list;
-		}
-	});
-var _kwasniew$lean_canvas_elm$LeanCanvas$findCardById = F2(
-	function (cards, id) {
-		return _elm_lang$core$List$head(
-			A2(
-				_elm_lang$core$List$filter,
-				function (card) {
-					return _elm_lang$core$Native_Utils.eq(card.id, id);
-				},
-				cards));
-	});
-var _kwasniew$lean_canvas_elm$LeanCanvas$reorderCards = F2(
-	function (cards, move) {
-		var _p4 = A2(_kwasniew$lean_canvas_elm$LeanCanvas$findCardById, cards, move.cardId);
-		if (_p4.ctor === 'Just') {
-			return A3(_kwasniew$lean_canvas_elm$LeanCanvas$moveCard, cards, _p4._0, move);
-		} else {
-			return cards;
-		}
-	});
-var _kwasniew$lean_canvas_elm$LeanCanvas$saveEditCard = F2(
-	function (entryCard, card) {
-		return _elm_lang$core$Native_Utils.eq(card.id, entryCard.id) ? _elm_lang$core$Native_Utils.update(
-			card,
-			{
-				editing: false,
-				text: _elm_lang$core$String$trimRight(entryCard.text)
-			}) : card;
-	});
-var _kwasniew$lean_canvas_elm$LeanCanvas$setEditMode = F3(
-	function (id, condition, card) {
-		return _elm_lang$core$Native_Utils.eq(card.id, id) ? _elm_lang$core$Native_Utils.update(
-			card,
-			{editing: condition}) : card;
-	});
-var _kwasniew$lean_canvas_elm$LeanCanvas$textError = function (modelError) {
-	var _p5 = modelError;
-	if (_p5.ctor === 'Just') {
-		return _p5._0;
-	} else {
-		return '';
-	}
-};
-var _kwasniew$lean_canvas_elm$LeanCanvas$escape = 27;
-var _kwasniew$lean_canvas_elm$LeanCanvas$enter = 13;
-var _kwasniew$lean_canvas_elm$LeanCanvas$onKeyUp = function (config) {
-	var isCode = function (code) {
-		var _p6 = A2(_elm_lang$core$Dict$get, code, config);
-		if (_p6.ctor === 'Just') {
-			return _elm_lang$core$Json_Decode$succeed(_p6._0);
-		} else {
-			return _elm_lang$core$Json_Decode$fail('not the right key code');
-		}
-	};
-	return A2(
-		_elm_lang$html$Html_Events$on,
-		'keyup',
-		A2(_elm_lang$core$Json_Decode$andThen, isCode, _elm_lang$html$Html_Events$keyCode));
-};
-var _kwasniew$lean_canvas_elm$LeanCanvas$toHeader = function (dataAttribute) {
-	return A2(
-		_elm_lang$core$String$join,
-		' ',
-		A2(
-			_elm_lang$core$List$map,
-			_elm_lang$core$String$toUpper,
-			A2(_elm_lang$core$String$split, '-', dataAttribute)));
-};
-var _kwasniew$lean_canvas_elm$LeanCanvas$modelToJson = function (model) {
+var _kwasniew$lean_canvas_elm$BodyEncoder$modelToJson = function (model) {
 	return A2(
 		_elm_lang$core$Json_Encode$encode,
 		4,
@@ -13889,17 +13718,155 @@ var _kwasniew$lean_canvas_elm$LeanCanvas$modelToJson = function (model) {
 				}
 			}));
 };
-var _kwasniew$lean_canvas_elm$LeanCanvas$initialModel = function (page) {
-	return {
-		uid: 0,
-		cards: {ctor: '[]'},
-		entryCard: {section: '', text: '', id: 0},
-		name: 'Business Model Canvas',
-		editing: false,
-		oldName: 'Business Model Canvas',
-		page: page,
-		error: _elm_lang$core$Maybe$Nothing
-	};
+
+var _kwasniew$lean_canvas_elm$ResponseDecoder$pageDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'id',
+	_elm_lang$core$Json_Decode$string,
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_kwasniew$lean_canvas_elm$Model$Existing));
+var _kwasniew$lean_canvas_elm$ResponseDecoder$cardDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'editing',
+	_elm_lang$core$Json_Decode$bool,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'id',
+		_elm_lang$core$Json_Decode$int,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'text',
+			_elm_lang$core$Json_Decode$string,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'section',
+				_elm_lang$core$Json_Decode$string,
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_kwasniew$lean_canvas_elm$Model$Card)))));
+var _kwasniew$lean_canvas_elm$ResponseDecoder$entryCardDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'id',
+	_elm_lang$core$Json_Decode$int,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'text',
+		_elm_lang$core$Json_Decode$string,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'section',
+			_elm_lang$core$Json_Decode$string,
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_kwasniew$lean_canvas_elm$Model$EntryCard))));
+var _kwasniew$lean_canvas_elm$ResponseDecoder$modelDecoder = A2(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$hardcoded,
+	_elm_lang$core$Maybe$Nothing,
+	A2(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$custom,
+		A2(
+			_elm_lang$core$Json_Decode$map,
+			_kwasniew$lean_canvas_elm$Model$Existing,
+			A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$string)),
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'oldName',
+			_elm_lang$core$Json_Decode$string,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'editing',
+				_elm_lang$core$Json_Decode$bool,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'name',
+					_elm_lang$core$Json_Decode$string,
+					A3(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+						'entryCard',
+						_kwasniew$lean_canvas_elm$ResponseDecoder$entryCardDecoder,
+						A3(
+							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+							'cards',
+							_elm_lang$core$Json_Decode$list(_kwasniew$lean_canvas_elm$ResponseDecoder$cardDecoder),
+							A3(
+								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+								'uid',
+								_elm_lang$core$Json_Decode$int,
+								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_kwasniew$lean_canvas_elm$Model$Model)))))))));
+
+var _kwasniew$lean_canvas_elm$Messages$NoOp = {ctor: 'NoOp'};
+var _kwasniew$lean_canvas_elm$Messages$Navigate = function (a) {
+	return {ctor: 'Navigate', _0: a};
+};
+var _kwasniew$lean_canvas_elm$Messages$ChangePage = function (a) {
+	return {ctor: 'ChangePage', _0: a};
+};
+var _kwasniew$lean_canvas_elm$Messages$Fetched = function (a) {
+	return {ctor: 'Fetched', _0: a};
+};
+var _kwasniew$lean_canvas_elm$Messages$Saved = function (a) {
+	return {ctor: 'Saved', _0: a};
+};
+var _kwasniew$lean_canvas_elm$Messages$Update = {ctor: 'Update'};
+var _kwasniew$lean_canvas_elm$Messages$Save = {ctor: 'Save'};
+var _kwasniew$lean_canvas_elm$Messages$AbortEditName = {ctor: 'AbortEditName'};
+var _kwasniew$lean_canvas_elm$Messages$ConfirmEditName = {ctor: 'ConfirmEditName'};
+var _kwasniew$lean_canvas_elm$Messages$UpdateName = function (a) {
+	return {ctor: 'UpdateName', _0: a};
+};
+var _kwasniew$lean_canvas_elm$Messages$EnableEditName = {ctor: 'EnableEditName'};
+var _kwasniew$lean_canvas_elm$Messages$MoveCard = function (a) {
+	return {ctor: 'MoveCard', _0: a};
+};
+var _kwasniew$lean_canvas_elm$Messages$UpdateEntryCard = function (a) {
+	return {ctor: 'UpdateEntryCard', _0: a};
+};
+var _kwasniew$lean_canvas_elm$Messages$DeleteEntryCard = {ctor: 'DeleteEntryCard'};
+var _kwasniew$lean_canvas_elm$Messages$DeleteCard = function (a) {
+	return {ctor: 'DeleteCard', _0: a};
+};
+var _kwasniew$lean_canvas_elm$Messages$UpdateCard = function (a) {
+	return {ctor: 'UpdateCard', _0: a};
+};
+var _kwasniew$lean_canvas_elm$Messages$AbortUpdateCard = function (a) {
+	return {ctor: 'AbortUpdateCard', _0: a};
+};
+var _kwasniew$lean_canvas_elm$Messages$ConfirmUpdateCard = {ctor: 'ConfirmUpdateCard'};
+var _kwasniew$lean_canvas_elm$Messages$EnableEditCard = function (a) {
+	return {ctor: 'EnableEditCard', _0: a};
+};
+var _kwasniew$lean_canvas_elm$Messages$AddCard = {ctor: 'AddCard'};
+var _kwasniew$lean_canvas_elm$Messages$EnableAddCard = function (a) {
+	return {ctor: 'EnableAddCard', _0: a};
+};
+
+var _kwasniew$lean_canvas_elm$LeanCanvas$hashToPage = function (hash) {
+	var _p0 = hash;
+	if (_p0 === '') {
+		return _kwasniew$lean_canvas_elm$Model$New;
+	} else {
+		return _kwasniew$lean_canvas_elm$Model$Existing(
+			A2(_elm_lang$core$String$dropLeft, 1, _p0));
+	}
+};
+var _kwasniew$lean_canvas_elm$LeanCanvas$locationToMsg = function (location) {
+	return _kwasniew$lean_canvas_elm$Messages$ChangePage(
+		_kwasniew$lean_canvas_elm$LeanCanvas$hashToPage(location.hash));
+};
+var _kwasniew$lean_canvas_elm$LeanCanvas$init = function (location) {
+	var page = _kwasniew$lean_canvas_elm$LeanCanvas$hashToPage(location.hash);
+	var model = _kwasniew$lean_canvas_elm$Model$initialModel(page);
+	var _p1 = page;
+	if (_p1.ctor === 'New') {
+		return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+	} else {
+		return {
+			ctor: '_Tuple2',
+			_0: model,
+			_1: A2(
+				_elm_lang$http$Http$send,
+				_kwasniew$lean_canvas_elm$Messages$Fetched,
+				A2(
+					_elm_lang$http$Http$get,
+					A2(_elm_lang$core$Basics_ops['++'], '/canvas/', _p1._0),
+					_kwasniew$lean_canvas_elm$ResponseDecoder$modelDecoder))
+		};
+	}
 };
 var _kwasniew$lean_canvas_elm$LeanCanvas$drags = _elm_lang$core$Native_Platform.incomingPort(
 	'drags',
@@ -13920,390 +13887,79 @@ var _kwasniew$lean_canvas_elm$LeanCanvas$drags = _elm_lang$core$Native_Platform.
 				A2(_elm_lang$core$Json_Decode$field, 'from', _elm_lang$core$Json_Decode$int));
 		},
 		A2(_elm_lang$core$Json_Decode$field, 'cardId', _elm_lang$core$Json_Decode$int)));
-var _kwasniew$lean_canvas_elm$LeanCanvas$NoOp = {ctor: 'NoOp'};
-var _kwasniew$lean_canvas_elm$LeanCanvas$Navigate = function (a) {
-	return {ctor: 'Navigate', _0: a};
+var _kwasniew$lean_canvas_elm$LeanCanvas$subscriptions = function (model) {
+	return _kwasniew$lean_canvas_elm$LeanCanvas$drags(_kwasniew$lean_canvas_elm$Messages$MoveCard);
 };
-var _kwasniew$lean_canvas_elm$LeanCanvas$ChangePage = function (a) {
-	return {ctor: 'ChangePage', _0: a};
-};
-var _kwasniew$lean_canvas_elm$LeanCanvas$locationToMsg = function (location) {
-	return _kwasniew$lean_canvas_elm$LeanCanvas$ChangePage(
-		_kwasniew$lean_canvas_elm$LeanCanvas$hashToPage(location.hash));
-};
-var _kwasniew$lean_canvas_elm$LeanCanvas$Fetched = function (a) {
-	return {ctor: 'Fetched', _0: a};
-};
-var _kwasniew$lean_canvas_elm$LeanCanvas$init = function (location) {
-	var page = _kwasniew$lean_canvas_elm$LeanCanvas$hashToPage(location.hash);
-	var model = _kwasniew$lean_canvas_elm$LeanCanvas$initialModel(page);
-	var _p7 = page;
-	if (_p7.ctor === 'New') {
-		return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+
+var _kwasniew$lean_canvas_elm$View$textError = function (modelError) {
+	var _p0 = modelError;
+	if (_p0.ctor === 'Just') {
+		return _p0._0;
 	} else {
-		return {
-			ctor: '_Tuple2',
-			_0: model,
-			_1: A2(
-				_elm_lang$http$Http$send,
-				_kwasniew$lean_canvas_elm$LeanCanvas$Fetched,
-				A2(
-					_elm_lang$http$Http$get,
-					A2(_elm_lang$core$Basics_ops['++'], '/canvas/', _p7._0),
-					_kwasniew$lean_canvas_elm$ResponseDecoder$modelDecoder))
-		};
+		return '';
 	}
 };
-var _kwasniew$lean_canvas_elm$LeanCanvas$Saved = function (a) {
-	return {ctor: 'Saved', _0: a};
+var _kwasniew$lean_canvas_elm$View$escape = 27;
+var _kwasniew$lean_canvas_elm$View$enter = 13;
+var _kwasniew$lean_canvas_elm$View$onKeyUp = function (config) {
+	var isCode = function (code) {
+		var _p1 = A2(_elm_lang$core$Dict$get, code, config);
+		if (_p1.ctor === 'Just') {
+			return _elm_lang$core$Json_Decode$succeed(_p1._0);
+		} else {
+			return _elm_lang$core$Json_Decode$fail('not the right key code');
+		}
+	};
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'keyup',
+		A2(_elm_lang$core$Json_Decode$andThen, isCode, _elm_lang$html$Html_Events$keyCode));
 };
-var _kwasniew$lean_canvas_elm$LeanCanvas$update = F2(
-	function (msg, model) {
-		var _p8 = msg;
-		switch (_p8.ctor) {
-			case 'NoOp':
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-			case 'EnableAddCard':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							entryCard: {section: _p8._0, text: '', id: 0},
-							cards: A2(
-								_elm_lang$core$List$map,
-								function (card) {
-									return _elm_lang$core$Native_Utils.update(
-										card,
-										{editing: false});
-								},
-								model.cards)
-						}),
-					_1: A2(
-						_elm_lang$core$Task$attempt,
-						function (_p9) {
-							return _kwasniew$lean_canvas_elm$LeanCanvas$NoOp;
-						},
-						_elm_lang$dom$Dom$focus('new-card'))
-				};
-			case 'AddCard':
-				var entryCard = model.entryCard;
-				var entryText = _elm_lang$core$String$trimRight(entryCard.text);
-				return (_elm_lang$core$Native_Utils.cmp(
-					_elm_lang$core$String$length(entryText),
-					0) > 0) ? {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							cards: A2(
-								_elm_lang$core$Basics_ops['++'],
-								model.cards,
+var _kwasniew$lean_canvas_elm$View$viewAddCard = function (txt) {
+	return A2(
+		_elm_lang$html$Html$textarea,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$id('new-card'),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('new-card-input'),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onBlur(_kwasniew$lean_canvas_elm$Messages$DeleteEntryCard),
+					_1: {
+						ctor: '::',
+						_0: _kwasniew$lean_canvas_elm$View$onKeyUp(
+							_elm_lang$core$Dict$fromList(
 								{
 									ctor: '::',
-									_0: A4(_kwasniew$lean_canvas_elm$Model$Card, model.entryCard.section, entryText, model.uid, false),
+									_0: {ctor: '_Tuple2', _0: _kwasniew$lean_canvas_elm$View$enter, _1: _kwasniew$lean_canvas_elm$Messages$AddCard},
+									_1: {
+										ctor: '::',
+										_0: {ctor: '_Tuple2', _0: _kwasniew$lean_canvas_elm$View$escape, _1: _kwasniew$lean_canvas_elm$Messages$DeleteEntryCard},
+										_1: {ctor: '[]'}
+									}
+								})),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onInput(_kwasniew$lean_canvas_elm$Messages$UpdateEntryCard),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$autofocus(true),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$value(txt),
 									_1: {ctor: '[]'}
-								}),
-							uid: model.uid + 1,
-							entryCard: {section: entryCard.section, text: '', id: model.uid}
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				} : {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							entryCard: _elm_lang$core$Native_Utils.update(
-								entryCard,
-								{text: ''})
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'EnableEditCard':
-				var _p11 = _p8._0;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							cards: A2(
-								_elm_lang$core$List$map,
-								A2(_kwasniew$lean_canvas_elm$LeanCanvas$setEditMode, _p11.id, true),
-								model.cards),
-							entryCard: {section: '', text: _p11.text, id: _p11.id}
-						}),
-					_1: A2(
-						_elm_lang$core$Task$attempt,
-						function (_p10) {
-							return _kwasniew$lean_canvas_elm$LeanCanvas$NoOp;
-						},
-						_elm_lang$dom$Dom$focus('new-card'))
-				};
-			case 'ConfirmUpdateCard':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							cards: A2(
-								_elm_lang$core$List$map,
-								_kwasniew$lean_canvas_elm$LeanCanvas$saveEditCard(model.entryCard),
-								model.cards)
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'AbortUpdateCard':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							cards: A2(
-								_elm_lang$core$List$map,
-								A2(_kwasniew$lean_canvas_elm$LeanCanvas$setEditMode, _p8._0, false),
-								model.cards)
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'UpdateCard':
-				var entryCard = model.entryCard;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							entryCard: _elm_lang$core$Native_Utils.update(
-								entryCard,
-								{text: _p8._0})
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'DeleteCard':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							cards: A2(
-								_elm_lang$core$List$filter,
-								function (card) {
-									return !_elm_lang$core$Native_Utils.eq(card.id, _p8._0);
-								},
-								model.cards)
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'DeleteEntryCard':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							entryCard: {section: '', text: '', id: 0}
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'UpdateEntryCard':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							entryCard: {section: model.entryCard.section, text: _p8._0, id: model.entryCard.id}
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'MoveCard':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							cards: A2(_kwasniew$lean_canvas_elm$LeanCanvas$reorderCards, model.cards, _p8._0)
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'EnableEditName':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{editing: true}),
-					_1: A2(
-						_elm_lang$core$Task$attempt,
-						function (_p12) {
-							return _kwasniew$lean_canvas_elm$LeanCanvas$NoOp;
-						},
-						_elm_lang$dom$Dom$focus('edit-name'))
-				};
-			case 'UpdateName':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{name: _p8._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'ConfirmEditName':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{editing: false, oldName: model.name}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'AbortEditName':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{editing: false, name: model.oldName}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'Save':
-				return {
-					ctor: '_Tuple2',
-					_0: model,
-					_1: A2(
-						_elm_lang$http$Http$send,
-						_kwasniew$lean_canvas_elm$LeanCanvas$Saved,
-						A3(
-							_elm_lang$http$Http$post,
-							'/canvas',
-							A2(
-								_elm_lang$http$Http$stringBody,
-								'application/json',
-								_kwasniew$lean_canvas_elm$LeanCanvas$modelToJson(model)),
-							_elm_lang$core$Json_Decode$string))
-				};
-			case 'Update':
-				var _p13 = model.page;
-				if (_p13.ctor === 'Existing') {
-					return {
-						ctor: '_Tuple2',
-						_0: model,
-						_1: A2(
-							_elm_lang$http$Http$send,
-							_kwasniew$lean_canvas_elm$LeanCanvas$Saved,
-							A3(
-								_elm_lang$http$Http$post,
-								A2(_elm_lang$core$Basics_ops['++'], '/canvas/', _p13._0),
-								A2(
-									_elm_lang$http$Http$stringBody,
-									'application/json',
-									_kwasniew$lean_canvas_elm$LeanCanvas$modelToJson(model)),
-								_elm_lang$core$Json_Decode$string))
-					};
-				} else {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
-			case 'Saved':
-				var _p14 = _p8._0;
-				if (_p14.ctor === 'Ok') {
-					return {
-						ctor: '_Tuple2',
-						_0: model,
-						_1: _elm_lang$navigation$Navigation$newUrl(
-							A2(_elm_lang$core$Basics_ops['++'], '#', _p14._0))
-					};
-				} else {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{
-								error: _elm_lang$core$Maybe$Just(
-									_elm_lang$core$Basics$toString(_p14._0))
-							}),
-						_1: _elm_lang$core$Platform_Cmd$none
-					};
-				}
-			case 'ChangePage':
-				var _p16 = _p8._0;
-				if (_elm_lang$core$Native_Utils.eq(_p16, model.page)) {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				} else {
-					var _p15 = _p16;
-					if (_p15.ctor === 'New') {
-						return {
-							ctor: '_Tuple2',
-							_0: _kwasniew$lean_canvas_elm$LeanCanvas$initialModel(_kwasniew$lean_canvas_elm$Model$New),
-							_1: _elm_lang$core$Platform_Cmd$none
-						};
-					} else {
-						return {
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
-								model,
-								{page: _p16}),
-							_1: A2(
-								_elm_lang$http$Http$send,
-								_kwasniew$lean_canvas_elm$LeanCanvas$Fetched,
-								A2(
-									_elm_lang$http$Http$get,
-									A2(_elm_lang$core$Basics_ops['++'], '/canvas/', _p15._0),
-									_kwasniew$lean_canvas_elm$ResponseDecoder$modelDecoder))
-						};
+								}
+							}
+						}
 					}
 				}
-			case 'Navigate':
-				return {
-					ctor: '_Tuple2',
-					_0: model,
-					_1: _elm_lang$navigation$Navigation$newUrl(
-						_kwasniew$lean_canvas_elm$LeanCanvas$pageToHash(_p8._0))
-				};
-			default:
-				var _p17 = _p8._0;
-				if (_p17.ctor === 'Ok') {
-					return {ctor: '_Tuple2', _0: _p17._0, _1: _elm_lang$core$Platform_Cmd$none};
-				} else {
-					var emptyModel = _kwasniew$lean_canvas_elm$LeanCanvas$initialModel(_kwasniew$lean_canvas_elm$Model$New);
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							emptyModel,
-							{
-								error: _elm_lang$core$Maybe$Just(
-									_elm_lang$core$Basics$toString(_p17._0))
-							}),
-						_1: _elm_lang$core$Platform_Cmd$none
-					};
-				}
-		}
-	});
-var _kwasniew$lean_canvas_elm$LeanCanvas$Update = {ctor: 'Update'};
-var _kwasniew$lean_canvas_elm$LeanCanvas$Save = {ctor: 'Save'};
-var _kwasniew$lean_canvas_elm$LeanCanvas$AbortEditName = {ctor: 'AbortEditName'};
-var _kwasniew$lean_canvas_elm$LeanCanvas$ConfirmEditName = {ctor: 'ConfirmEditName'};
-var _kwasniew$lean_canvas_elm$LeanCanvas$UpdateName = function (a) {
-	return {ctor: 'UpdateName', _0: a};
+			}
+		},
+		{ctor: '[]'});
 };
-var _kwasniew$lean_canvas_elm$LeanCanvas$EnableEditName = {ctor: 'EnableEditName'};
-var _kwasniew$lean_canvas_elm$LeanCanvas$MoveCard = function (a) {
-	return {ctor: 'MoveCard', _0: a};
-};
-var _kwasniew$lean_canvas_elm$LeanCanvas$subscriptions = function (model) {
-	return _kwasniew$lean_canvas_elm$LeanCanvas$drags(_kwasniew$lean_canvas_elm$LeanCanvas$MoveCard);
-};
-var _kwasniew$lean_canvas_elm$LeanCanvas$UpdateEntryCard = function (a) {
-	return {ctor: 'UpdateEntryCard', _0: a};
-};
-var _kwasniew$lean_canvas_elm$LeanCanvas$DeleteEntryCard = {ctor: 'DeleteEntryCard'};
-var _kwasniew$lean_canvas_elm$LeanCanvas$DeleteCard = function (a) {
-	return {ctor: 'DeleteCard', _0: a};
-};
-var _kwasniew$lean_canvas_elm$LeanCanvas$UpdateCard = function (a) {
-	return {ctor: 'UpdateCard', _0: a};
-};
-var _kwasniew$lean_canvas_elm$LeanCanvas$AbortUpdateCard = function (a) {
-	return {ctor: 'AbortUpdateCard', _0: a};
-};
-var _kwasniew$lean_canvas_elm$LeanCanvas$ConfirmUpdateCard = {ctor: 'ConfirmUpdateCard'};
-var _kwasniew$lean_canvas_elm$LeanCanvas$EnableEditCard = function (a) {
-	return {ctor: 'EnableEditCard', _0: a};
-};
-var _kwasniew$lean_canvas_elm$LeanCanvas$viewCard = F2(
+var _kwasniew$lean_canvas_elm$View$viewCard = F2(
 	function (entryCard, card) {
 		return _elm_lang$core$Native_Utils.eq(card.editing, true) ? A2(
 			_elm_lang$html$Html$textarea,
@@ -14316,27 +13972,27 @@ var _kwasniew$lean_canvas_elm$LeanCanvas$viewCard = F2(
 					_1: {
 						ctor: '::',
 						_0: _elm_lang$html$Html_Events$onBlur(
-							_kwasniew$lean_canvas_elm$LeanCanvas$AbortUpdateCard(card.id)),
+							_kwasniew$lean_canvas_elm$Messages$AbortUpdateCard(card.id)),
 						_1: {
 							ctor: '::',
-							_0: _kwasniew$lean_canvas_elm$LeanCanvas$onKeyUp(
+							_0: _kwasniew$lean_canvas_elm$View$onKeyUp(
 								_elm_lang$core$Dict$fromList(
 									{
 										ctor: '::',
-										_0: {ctor: '_Tuple2', _0: _kwasniew$lean_canvas_elm$LeanCanvas$enter, _1: _kwasniew$lean_canvas_elm$LeanCanvas$ConfirmUpdateCard},
+										_0: {ctor: '_Tuple2', _0: _kwasniew$lean_canvas_elm$View$enter, _1: _kwasniew$lean_canvas_elm$Messages$ConfirmUpdateCard},
 										_1: {
 											ctor: '::',
 											_0: {
 												ctor: '_Tuple2',
-												_0: _kwasniew$lean_canvas_elm$LeanCanvas$escape,
-												_1: _kwasniew$lean_canvas_elm$LeanCanvas$AbortUpdateCard(card.id)
+												_0: _kwasniew$lean_canvas_elm$View$escape,
+												_1: _kwasniew$lean_canvas_elm$Messages$AbortUpdateCard(card.id)
 											},
 											_1: {ctor: '[]'}
 										}
 									})),
 							_1: {
 								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onInput(_kwasniew$lean_canvas_elm$LeanCanvas$UpdateCard),
+								_0: _elm_lang$html$Html_Events$onInput(_kwasniew$lean_canvas_elm$Messages$UpdateCard),
 								_1: {
 									ctor: '::',
 									_0: _elm_lang$html$Html_Attributes$autofocus(true),
@@ -14368,7 +14024,7 @@ var _kwasniew$lean_canvas_elm$LeanCanvas$viewCard = F2(
 						_1: {
 							ctor: '::',
 							_0: _elm_lang$html$Html_Events$onDoubleClick(
-								_kwasniew$lean_canvas_elm$LeanCanvas$EnableEditCard(card)),
+								_kwasniew$lean_canvas_elm$Messages$EnableEditCard(card)),
 							_1: {ctor: '[]'}
 						}
 					}
@@ -14393,7 +14049,7 @@ var _kwasniew$lean_canvas_elm$LeanCanvas$viewCard = F2(
 								{
 									ctor: '::',
 									_0: _elm_lang$html$Html_Events$onClick(
-										_kwasniew$lean_canvas_elm$LeanCanvas$DeleteCard(card.id)),
+										_kwasniew$lean_canvas_elm$Messages$DeleteCard(card.id)),
 									_1: {ctor: '[]'}
 								},
 								{
@@ -14407,55 +14063,16 @@ var _kwasniew$lean_canvas_elm$LeanCanvas$viewCard = F2(
 				}
 			});
 	});
-var _kwasniew$lean_canvas_elm$LeanCanvas$AddCard = {ctor: 'AddCard'};
-var _kwasniew$lean_canvas_elm$LeanCanvas$viewAddCard = function (txt) {
+var _kwasniew$lean_canvas_elm$View$toHeader = function (dataAttribute) {
 	return A2(
-		_elm_lang$html$Html$textarea,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$id('new-card'),
-			_1: {
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('new-card-input'),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$html$Html_Events$onBlur(_kwasniew$lean_canvas_elm$LeanCanvas$DeleteEntryCard),
-					_1: {
-						ctor: '::',
-						_0: _kwasniew$lean_canvas_elm$LeanCanvas$onKeyUp(
-							_elm_lang$core$Dict$fromList(
-								{
-									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: _kwasniew$lean_canvas_elm$LeanCanvas$enter, _1: _kwasniew$lean_canvas_elm$LeanCanvas$AddCard},
-									_1: {
-										ctor: '::',
-										_0: {ctor: '_Tuple2', _0: _kwasniew$lean_canvas_elm$LeanCanvas$escape, _1: _kwasniew$lean_canvas_elm$LeanCanvas$DeleteEntryCard},
-										_1: {ctor: '[]'}
-									}
-								})),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onInput(_kwasniew$lean_canvas_elm$LeanCanvas$UpdateEntryCard),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$autofocus(true),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$value(txt),
-									_1: {ctor: '[]'}
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		{ctor: '[]'});
+		_elm_lang$core$String$join,
+		' ',
+		A2(
+			_elm_lang$core$List$map,
+			_elm_lang$core$String$toUpper,
+			A2(_elm_lang$core$String$split, '-', dataAttribute)));
 };
-var _kwasniew$lean_canvas_elm$LeanCanvas$EnableAddCard = function (a) {
-	return {ctor: 'EnableAddCard', _0: a};
-};
-var _kwasniew$lean_canvas_elm$LeanCanvas$viewSection = F3(
+var _kwasniew$lean_canvas_elm$View$viewSection = F3(
 	function (model, section, className) {
 		return A2(
 			_elm_lang$html$Html$div,
@@ -14477,7 +14094,7 @@ var _kwasniew$lean_canvas_elm$LeanCanvas$viewSection = F3(
 					{
 						ctor: '::',
 						_0: _elm_lang$html$Html$text(
-							_kwasniew$lean_canvas_elm$LeanCanvas$toHeader(section)),
+							_kwasniew$lean_canvas_elm$View$toHeader(section)),
 						_1: {ctor: '[]'}
 					}),
 				_1: {
@@ -14491,7 +14108,7 @@ var _kwasniew$lean_canvas_elm$LeanCanvas$viewSection = F3(
 						},
 						A2(
 							_elm_lang$core$List$map,
-							_kwasniew$lean_canvas_elm$LeanCanvas$viewCard(model.entryCard),
+							_kwasniew$lean_canvas_elm$View$viewCard(model.entryCard),
 							A2(
 								_elm_lang$core$List$filter,
 								function (card) {
@@ -14500,7 +14117,7 @@ var _kwasniew$lean_canvas_elm$LeanCanvas$viewSection = F3(
 								model.cards))),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$core$Native_Utils.eq(model.entryCard.section, section) ? _kwasniew$lean_canvas_elm$LeanCanvas$viewAddCard(model.entryCard.text) : _elm_lang$html$Html$text(''),
+						_0: _elm_lang$core$Native_Utils.eq(model.entryCard.section, section) ? _kwasniew$lean_canvas_elm$View$viewAddCard(model.entryCard.text) : _elm_lang$html$Html$text(''),
 						_1: {
 							ctor: '::',
 							_0: A2(
@@ -14511,7 +14128,7 @@ var _kwasniew$lean_canvas_elm$LeanCanvas$viewSection = F3(
 									_1: {
 										ctor: '::',
 										_0: _elm_lang$html$Html_Events$onClick(
-											_kwasniew$lean_canvas_elm$LeanCanvas$EnableAddCard(section)),
+											_kwasniew$lean_canvas_elm$Messages$EnableAddCard(section)),
 										_1: {ctor: '[]'}
 									}
 								},
@@ -14526,8 +14143,8 @@ var _kwasniew$lean_canvas_elm$LeanCanvas$viewSection = F3(
 				}
 			});
 	});
-var _kwasniew$lean_canvas_elm$LeanCanvas$view = function (model) {
-	var viewSectionWithModel = _kwasniew$lean_canvas_elm$LeanCanvas$viewSection(model);
+var _kwasniew$lean_canvas_elm$View$view = function (model) {
+	var viewSectionWithModel = _kwasniew$lean_canvas_elm$View$viewSection(model);
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -14544,7 +14161,7 @@ var _kwasniew$lean_canvas_elm$LeanCanvas$view = function (model) {
 					_0: _elm_lang$html$Html_Attributes$class('header'),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onDoubleClick(_kwasniew$lean_canvas_elm$LeanCanvas$EnableEditName),
+						_0: _elm_lang$html$Html_Events$onDoubleClick(_kwasniew$lean_canvas_elm$Messages$EnableEditName),
 						_1: {ctor: '[]'}
 					}
 				},
@@ -14563,20 +14180,20 @@ var _kwasniew$lean_canvas_elm$LeanCanvas$view = function (model) {
 									_0: _elm_lang$html$Html_Attributes$id('edit-name'),
 									_1: {
 										ctor: '::',
-										_0: _elm_lang$html$Html_Events$onInput(_kwasniew$lean_canvas_elm$LeanCanvas$UpdateName),
+										_0: _elm_lang$html$Html_Events$onInput(_kwasniew$lean_canvas_elm$Messages$UpdateName),
 										_1: {
 											ctor: '::',
-											_0: _elm_lang$html$Html_Events$onBlur(_kwasniew$lean_canvas_elm$LeanCanvas$AbortEditName),
+											_0: _elm_lang$html$Html_Events$onBlur(_kwasniew$lean_canvas_elm$Messages$AbortEditName),
 											_1: {
 												ctor: '::',
-												_0: _kwasniew$lean_canvas_elm$LeanCanvas$onKeyUp(
+												_0: _kwasniew$lean_canvas_elm$View$onKeyUp(
 													_elm_lang$core$Dict$fromList(
 														{
 															ctor: '::',
-															_0: {ctor: '_Tuple2', _0: _kwasniew$lean_canvas_elm$LeanCanvas$enter, _1: _kwasniew$lean_canvas_elm$LeanCanvas$ConfirmEditName},
+															_0: {ctor: '_Tuple2', _0: _kwasniew$lean_canvas_elm$View$enter, _1: _kwasniew$lean_canvas_elm$Messages$ConfirmEditName},
 															_1: {
 																ctor: '::',
-																_0: {ctor: '_Tuple2', _0: _kwasniew$lean_canvas_elm$LeanCanvas$escape, _1: _kwasniew$lean_canvas_elm$LeanCanvas$AbortEditName},
+																_0: {ctor: '_Tuple2', _0: _kwasniew$lean_canvas_elm$View$escape, _1: _kwasniew$lean_canvas_elm$Messages$AbortEditName},
 																_1: {ctor: '[]'}
 															}
 														})),
@@ -14694,7 +14311,7 @@ var _kwasniew$lean_canvas_elm$LeanCanvas$view = function (model) {
 									_0: _elm_lang$html$Html_Attributes$class('saveButton'),
 									_1: {
 										ctor: '::',
-										_0: _elm_lang$core$Native_Utils.eq(model.page, _kwasniew$lean_canvas_elm$Model$New) ? _elm_lang$html$Html_Events$onClick(_kwasniew$lean_canvas_elm$LeanCanvas$Save) : _elm_lang$html$Html_Events$onClick(_kwasniew$lean_canvas_elm$LeanCanvas$Update),
+										_0: _elm_lang$core$Native_Utils.eq(model.page, _kwasniew$lean_canvas_elm$Model$New) ? _elm_lang$html$Html_Events$onClick(_kwasniew$lean_canvas_elm$Messages$Save) : _elm_lang$html$Html_Events$onClick(_kwasniew$lean_canvas_elm$Messages$Update),
 										_1: {ctor: '[]'}
 									}
 								},
@@ -14714,7 +14331,7 @@ var _kwasniew$lean_canvas_elm$LeanCanvas$view = function (model) {
 							{
 								ctor: '::',
 								_0: _elm_lang$html$Html$text(
-									_kwasniew$lean_canvas_elm$LeanCanvas$textError(model.error)),
+									_kwasniew$lean_canvas_elm$View$textError(model.error)),
 								_1: {ctor: '[]'}
 							}),
 						_1: {
@@ -14729,7 +14346,7 @@ var _kwasniew$lean_canvas_elm$LeanCanvas$view = function (model) {
 										{
 											ctor: '::',
 											_0: _elm_lang$html$Html_Events$onClick(
-												_kwasniew$lean_canvas_elm$LeanCanvas$Navigate(_kwasniew$lean_canvas_elm$Model$New)),
+												_kwasniew$lean_canvas_elm$Messages$Navigate(_kwasniew$lean_canvas_elm$Model$New)),
 											_1: {ctor: '[]'}
 										},
 										{
@@ -14747,15 +14364,402 @@ var _kwasniew$lean_canvas_elm$LeanCanvas$view = function (model) {
 		});
 };
 
+var _kwasniew$lean_canvas_elm$Update$pageToHash = function (page) {
+	var _p0 = page;
+	if (_p0.ctor === 'New') {
+		return '#';
+	} else {
+		return A2(_elm_lang$core$Basics_ops['++'], '#', _p0._0);
+	}
+};
+var _kwasniew$lean_canvas_elm$Update$moveCard = F3(
+	function (list, fromCard, move) {
+		var toCardMaybe = A2(
+			_elm_lang$core$Array$get,
+			move.to,
+			_elm_lang$core$Array$fromList(list));
+		var _p1 = toCardMaybe;
+		if (_p1.ctor === 'Just') {
+			var _p2 = _p1._0;
+			return A3(
+				_elm_lang$core$List$foldr,
+				F2(
+					function (card, result) {
+						return (_elm_lang$core$Native_Utils.eq(card, _p2) && (_elm_lang$core$Native_Utils.cmp(move.from, move.to) < 0)) ? {
+							ctor: '::',
+							_0: _p2,
+							_1: {ctor: '::', _0: fromCard, _1: result}
+						} : ((_elm_lang$core$Native_Utils.eq(card, _p2) && (_elm_lang$core$Native_Utils.cmp(move.from, move.to) > 0)) ? {
+							ctor: '::',
+							_0: fromCard,
+							_1: {ctor: '::', _0: _p2, _1: result}
+						} : (_elm_lang$core$Native_Utils.eq(card, fromCard) ? result : {ctor: '::', _0: card, _1: result}));
+					}),
+				{ctor: '[]'},
+				list);
+		} else {
+			return list;
+		}
+	});
+var _kwasniew$lean_canvas_elm$Update$findCardById = F2(
+	function (cards, id) {
+		return _elm_lang$core$List$head(
+			A2(
+				_elm_lang$core$List$filter,
+				function (card) {
+					return _elm_lang$core$Native_Utils.eq(card.id, id);
+				},
+				cards));
+	});
+var _kwasniew$lean_canvas_elm$Update$reorderCards = F2(
+	function (cards, move) {
+		var _p3 = A2(_kwasniew$lean_canvas_elm$Update$findCardById, cards, move.cardId);
+		if (_p3.ctor === 'Just') {
+			return A3(_kwasniew$lean_canvas_elm$Update$moveCard, cards, _p3._0, move);
+		} else {
+			return cards;
+		}
+	});
+var _kwasniew$lean_canvas_elm$Update$saveEditCard = F2(
+	function (entryCard, card) {
+		return _elm_lang$core$Native_Utils.eq(card.id, entryCard.id) ? _elm_lang$core$Native_Utils.update(
+			card,
+			{
+				editing: false,
+				text: _elm_lang$core$String$trimRight(entryCard.text)
+			}) : card;
+	});
+var _kwasniew$lean_canvas_elm$Update$setEditMode = F3(
+	function (id, condition, card) {
+		return _elm_lang$core$Native_Utils.eq(card.id, id) ? _elm_lang$core$Native_Utils.update(
+			card,
+			{editing: condition}) : card;
+	});
+var _kwasniew$lean_canvas_elm$Update$update = F2(
+	function (msg, model) {
+		var _p4 = msg;
+		switch (_p4.ctor) {
+			case 'NoOp':
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'EnableAddCard':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							entryCard: {section: _p4._0, text: '', id: 0},
+							cards: A2(
+								_elm_lang$core$List$map,
+								function (card) {
+									return _elm_lang$core$Native_Utils.update(
+										card,
+										{editing: false});
+								},
+								model.cards)
+						}),
+					_1: A2(
+						_elm_lang$core$Task$attempt,
+						function (_p5) {
+							return _kwasniew$lean_canvas_elm$Messages$NoOp;
+						},
+						_elm_lang$dom$Dom$focus('new-card'))
+				};
+			case 'AddCard':
+				var entryCard = model.entryCard;
+				var entryText = _elm_lang$core$String$trimRight(entryCard.text);
+				return (_elm_lang$core$Native_Utils.cmp(
+					_elm_lang$core$String$length(entryText),
+					0) > 0) ? {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							cards: A2(
+								_elm_lang$core$Basics_ops['++'],
+								model.cards,
+								{
+									ctor: '::',
+									_0: A4(_kwasniew$lean_canvas_elm$Model$Card, model.entryCard.section, entryText, model.uid, false),
+									_1: {ctor: '[]'}
+								}),
+							uid: model.uid + 1,
+							entryCard: {section: entryCard.section, text: '', id: model.uid}
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				} : {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							entryCard: _elm_lang$core$Native_Utils.update(
+								entryCard,
+								{text: ''})
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'EnableEditCard':
+				var _p7 = _p4._0;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							cards: A2(
+								_elm_lang$core$List$map,
+								A2(_kwasniew$lean_canvas_elm$Update$setEditMode, _p7.id, true),
+								model.cards),
+							entryCard: {section: '', text: _p7.text, id: _p7.id}
+						}),
+					_1: A2(
+						_elm_lang$core$Task$attempt,
+						function (_p6) {
+							return _kwasniew$lean_canvas_elm$Messages$NoOp;
+						},
+						_elm_lang$dom$Dom$focus('new-card'))
+				};
+			case 'ConfirmUpdateCard':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							cards: A2(
+								_elm_lang$core$List$map,
+								_kwasniew$lean_canvas_elm$Update$saveEditCard(model.entryCard),
+								model.cards)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'AbortUpdateCard':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							cards: A2(
+								_elm_lang$core$List$map,
+								A2(_kwasniew$lean_canvas_elm$Update$setEditMode, _p4._0, false),
+								model.cards)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'UpdateCard':
+				var entryCard = model.entryCard;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							entryCard: _elm_lang$core$Native_Utils.update(
+								entryCard,
+								{text: _p4._0})
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'DeleteCard':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							cards: A2(
+								_elm_lang$core$List$filter,
+								function (card) {
+									return !_elm_lang$core$Native_Utils.eq(card.id, _p4._0);
+								},
+								model.cards)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'DeleteEntryCard':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							entryCard: {section: '', text: '', id: 0}
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'UpdateEntryCard':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							entryCard: {section: model.entryCard.section, text: _p4._0, id: model.entryCard.id}
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'MoveCard':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							cards: A2(_kwasniew$lean_canvas_elm$Update$reorderCards, model.cards, _p4._0)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'EnableEditName':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{editing: true}),
+					_1: A2(
+						_elm_lang$core$Task$attempt,
+						function (_p8) {
+							return _kwasniew$lean_canvas_elm$Messages$NoOp;
+						},
+						_elm_lang$dom$Dom$focus('edit-name'))
+				};
+			case 'UpdateName':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{name: _p4._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'ConfirmEditName':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{editing: false, oldName: model.name}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'AbortEditName':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{editing: false, name: model.oldName}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'Save':
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: A2(
+						_elm_lang$http$Http$send,
+						_kwasniew$lean_canvas_elm$Messages$Saved,
+						A3(
+							_elm_lang$http$Http$post,
+							'/canvas',
+							A2(
+								_elm_lang$http$Http$stringBody,
+								'application/json',
+								_kwasniew$lean_canvas_elm$BodyEncoder$modelToJson(model)),
+							_elm_lang$core$Json_Decode$string))
+				};
+			case 'Update':
+				var _p9 = model.page;
+				if (_p9.ctor === 'Existing') {
+					return {
+						ctor: '_Tuple2',
+						_0: model,
+						_1: A2(
+							_elm_lang$http$Http$send,
+							_kwasniew$lean_canvas_elm$Messages$Saved,
+							A3(
+								_elm_lang$http$Http$post,
+								A2(_elm_lang$core$Basics_ops['++'], '/canvas/', _p9._0),
+								A2(
+									_elm_lang$http$Http$stringBody,
+									'application/json',
+									_kwasniew$lean_canvas_elm$BodyEncoder$modelToJson(model)),
+								_elm_lang$core$Json_Decode$string))
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			case 'Saved':
+				var _p10 = _p4._0;
+				if (_p10.ctor === 'Ok') {
+					return {
+						ctor: '_Tuple2',
+						_0: model,
+						_1: _elm_lang$navigation$Navigation$newUrl(
+							A2(_elm_lang$core$Basics_ops['++'], '#', _p10._0))
+					};
+				} else {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								error: _elm_lang$core$Maybe$Just(
+									_elm_lang$core$Basics$toString(_p10._0))
+							}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				}
+			case 'ChangePage':
+				var _p12 = _p4._0;
+				if (_elm_lang$core$Native_Utils.eq(_p12, model.page)) {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				} else {
+					var _p11 = _p12;
+					if (_p11.ctor === 'New') {
+						return {
+							ctor: '_Tuple2',
+							_0: _kwasniew$lean_canvas_elm$Model$initialModel(_kwasniew$lean_canvas_elm$Model$New),
+							_1: _elm_lang$core$Platform_Cmd$none
+						};
+					} else {
+						return {
+							ctor: '_Tuple2',
+							_0: _elm_lang$core$Native_Utils.update(
+								model,
+								{page: _p12}),
+							_1: A2(
+								_elm_lang$http$Http$send,
+								_kwasniew$lean_canvas_elm$Messages$Fetched,
+								A2(
+									_elm_lang$http$Http$get,
+									A2(_elm_lang$core$Basics_ops['++'], '/canvas/', _p11._0),
+									_kwasniew$lean_canvas_elm$ResponseDecoder$modelDecoder))
+						};
+					}
+				}
+			case 'Navigate':
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: _elm_lang$navigation$Navigation$newUrl(
+						_kwasniew$lean_canvas_elm$Update$pageToHash(_p4._0))
+				};
+			default:
+				var _p13 = _p4._0;
+				if (_p13.ctor === 'Ok') {
+					return {ctor: '_Tuple2', _0: _p13._0, _1: _elm_lang$core$Platform_Cmd$none};
+				} else {
+					var emptyModel = _kwasniew$lean_canvas_elm$Model$initialModel(_kwasniew$lean_canvas_elm$Model$New);
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							emptyModel,
+							{
+								error: _elm_lang$core$Maybe$Just(
+									_elm_lang$core$Basics$toString(_p13._0))
+							}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				}
+		}
+	});
+
 var _kwasniew$lean_canvas_elm$Main$main = A2(
 	_elm_lang$navigation$Navigation$program,
 	_kwasniew$lean_canvas_elm$LeanCanvas$locationToMsg,
-	{view: _kwasniew$lean_canvas_elm$LeanCanvas$view, update: _kwasniew$lean_canvas_elm$LeanCanvas$update, init: _kwasniew$lean_canvas_elm$LeanCanvas$init, subscriptions: _kwasniew$lean_canvas_elm$LeanCanvas$subscriptions})();
+	{view: _kwasniew$lean_canvas_elm$View$view, update: _kwasniew$lean_canvas_elm$Update$update, init: _kwasniew$lean_canvas_elm$LeanCanvas$init, subscriptions: _kwasniew$lean_canvas_elm$LeanCanvas$subscriptions})();
 
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
 if (typeof _kwasniew$lean_canvas_elm$Main$main !== 'undefined') {
-    _kwasniew$lean_canvas_elm$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Dict.LeafColor":{"args":[],"tags":{"LBBlack":[],"LBlack":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":["Dict.LeafColor"]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Dict.NColor":{"args":[],"tags":{"BBlack":[],"Red":[],"NBlack":[],"Black":[]}},"Model.Page":{"args":[],"tags":{"New":[],"Existing":["String"]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String"],"NetworkError":[],"Timeout":[],"BadStatus":["Http.Response String"],"BadPayload":["String","Http.Response String"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"LeanCanvas.Msg":{"args":[],"tags":{"AddCard":[],"EnableEditCard":["Model.Card"],"EnableAddCard":["String"],"ConfirmUpdateCard":[],"Navigate":["Model.Page"],"AbortUpdateCard":["Int"],"EnableEditName":[],"DeleteCard":["Int"],"UpdateCard":["String"],"Saved":["Result.Result Http.Error String"],"ChangePage":["Model.Page"],"MoveCard":["Model.Move"],"Fetched":["Result.Result Http.Error Model.Model"],"UpdateName":["String"],"NoOp":[],"DeleteEntryCard":[],"UpdateEntryCard":["String"],"AbortEditName":[],"Save":[],"Update":[],"ConfirmEditName":[]}}},"aliases":{"Http.Response":{"args":["body"],"type":"{ url : String , status : { code : Int, message : String } , headers : Dict.Dict String String , body : body }"},"Model.Move":{"args":[],"type":"{ cardId : Int, from : Int, to : Int }"},"Model.Model":{"args":[],"type":"{ uid : Int , cards : List Model.Card , entryCard : Model.EntryCard , name : String , editing : Bool , oldName : String , page : Model.Page , error : Maybe.Maybe String }"},"Model.Card":{"args":[],"type":"{ section : String, text : String, id : Int, editing : Bool }"},"Model.EntryCard":{"args":[],"type":"{ section : String, text : String, id : Int }"}},"message":"LeanCanvas.Msg"},"versions":{"elm":"0.18.0"}});
+    _kwasniew$lean_canvas_elm$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Messages.Msg":{"args":[],"tags":{"AddCard":[],"EnableEditCard":["Model.Card"],"EnableAddCard":["String"],"ConfirmUpdateCard":[],"Navigate":["Model.Page"],"AbortUpdateCard":["Int"],"EnableEditName":[],"DeleteCard":["Int"],"UpdateCard":["String"],"Saved":["Result.Result Http.Error String"],"ChangePage":["Model.Page"],"MoveCard":["Model.Move"],"Fetched":["Result.Result Http.Error Model.Model"],"UpdateName":["String"],"NoOp":[],"DeleteEntryCard":[],"UpdateEntryCard":["String"],"AbortEditName":[],"Save":[],"Update":[],"ConfirmEditName":[]}},"Dict.LeafColor":{"args":[],"tags":{"LBBlack":[],"LBlack":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":["Dict.LeafColor"]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Dict.NColor":{"args":[],"tags":{"BBlack":[],"Red":[],"NBlack":[],"Black":[]}},"Model.Page":{"args":[],"tags":{"New":[],"Existing":["String"]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String"],"NetworkError":[],"Timeout":[],"BadStatus":["Http.Response String"],"BadPayload":["String","Http.Response String"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}}},"aliases":{"Http.Response":{"args":["body"],"type":"{ url : String , status : { code : Int, message : String } , headers : Dict.Dict String String , body : body }"},"Model.Move":{"args":[],"type":"{ cardId : Int, from : Int, to : Int }"},"Model.Model":{"args":[],"type":"{ uid : Int , cards : List Model.Card , entryCard : Model.EntryCard , name : String , editing : Bool , oldName : String , page : Model.Page , error : Maybe.Maybe String }"},"Model.Card":{"args":[],"type":"{ section : String, text : String, id : Int, editing : Bool }"},"Model.EntryCard":{"args":[],"type":"{ section : String, text : String, id : Int }"}},"message":"Messages.Msg"},"versions":{"elm":"0.18.0"}});
 }
 
 if (typeof define === "function" && define['amd'])

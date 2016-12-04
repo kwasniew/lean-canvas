@@ -3,13 +3,16 @@ module Main exposing (main)
 import LeanCanvas
 import Navigation exposing (..)
 import Model exposing (Model)
+import Messages
+import View
+import Update
 
 
-main : Program Never Model LeanCanvas.Msg
+main : Program Never Model Messages.Msg
 main =
     Navigation.program LeanCanvas.locationToMsg
-        { view = LeanCanvas.view
-        , update = LeanCanvas.update
+        { view = View.view
+        , update = Update.update
         , init = LeanCanvas.init
         , subscriptions = LeanCanvas.subscriptions
         }
