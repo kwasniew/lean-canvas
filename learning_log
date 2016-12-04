@@ -31,6 +31,8 @@ elm navigation - newUrl
 separate backend and configurable frontend with flags
 update existing record
 persistent store
+reload model after new url typed
+new canvas button
 tests
 styling: http://tachyons.io/ + icons
 personal map

@@ -278,9 +278,18 @@ view model =
             , div []
                 [ button
                     [ class "saveButton"
-                    , onClick Save
+                    , if model.page == New then
+                        onClick Save
+                      else
+                        onClick Update
                     ]
-                    [ text "Save" ]
+                    [ text
+                        (if model.page == New then
+                            "save"
+                         else
+                            "update"
+                        )
+                    ]
                 ]
             , div []
                 [ text (textError model.error)
@@ -314,6 +323,7 @@ type Msg
     | ConfirmEditName
     | AbortEditName
     | Save
+    | Update
     | Saved (Result Http.Error String)
     | Fetched (Result Http.Error Model)
     | ChangePage Page
@@ -416,6 +426,14 @@ update msg model =
 
         Save ->
             ( model, Http.send Saved <| Http.post "/canvas" (Http.stringBody "application/json" (modelToJson model)) (JD.string) )
+
+        Update ->
+            case model.page of
+                Existing id ->
+                    ( model, Http.send Saved <| Http.post ("/canvas/" ++ id) (Http.stringBody "application/json" (modelToJson model)) (JD.string) )
+
+                _ ->
+                    ( model, Cmd.none )
 
         Saved result ->
             case result of

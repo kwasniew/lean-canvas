@@ -23,6 +23,13 @@ app.post('/canvas', function(req, res, next) {
   res.send('"' + req.body.id + '"');
 });
 
+app.post('/canvas/:id', function(req, res, next) {
+  req.body.id = req.params.id;
+  db[req.params.id] = req.body;
+
+  res.send('"' + req.body.id + '"');
+});
+
 app.listen(process.env.PORT || 3000, function () {
     console.log('Example app listening on port 3000!');
 });
