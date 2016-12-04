@@ -4,7 +4,6 @@ import Html exposing (..)
 import Html.Attributes exposing (class, id, attribute, type_, href, draggable, autofocus, value)
 import Html.Events exposing (..)
 import Json.Decode as JD
-import Json.Decode.Pipeline exposing (decode, required, optional, hardcoded, custom)
 import Json.Encode as JE
 import Dom
 import Task
@@ -14,45 +13,8 @@ import Array
 import Maybe
 import Http
 import Navigation exposing (..)
-
-
-type Page
-    = New
-    | Existing String
-
-
-type alias Move =
-    { cardId : Int
-    , from : Int
-    , to : Int
-    }
-
-
-type alias Model =
-    { uid : Int
-    , cards : List Card
-    , entryCard : EntryCard
-    , name : String
-    , editing : Bool
-    , oldName : String
-    , page : Page
-    , error : Maybe String
-    }
-
-
-type alias EntryCard =
-    { section : String
-    , text : String
-    , id : Int
-    }
-
-
-type alias Card =
-    { section : String
-    , text : String
-    , id : Int
-    , editing : Bool
-    }
+import Model exposing (..)
+import ResponseDecoder exposing (..)
 
 
 initialModel : Page -> Model
@@ -66,42 +28,6 @@ initialModel page =
     , page = page
     , error = Nothing
     }
-
-
-entryCardDecoder : JD.Decoder EntryCard
-entryCardDecoder =
-    decode EntryCard
-        |> required "section" JD.string
-        |> required "text" JD.string
-        |> required "id" JD.int
-
-
-cardDecoder : JD.Decoder Card
-cardDecoder =
-    decode Card
-        |> required "section" JD.string
-        |> required "text" JD.string
-        |> required "id" JD.int
-        |> required "editing" JD.bool
-
-
-pageDecoder : JD.Decoder Page
-pageDecoder =
-    decode Existing
-        |> required "id" JD.string
-
-
-modelDecoder : JD.Decoder Model
-modelDecoder =
-    decode Model
-        |> required "uid" JD.int
-        |> required "cards" (JD.list cardDecoder)
-        |> required "entryCard" entryCardDecoder
-        |> required "name" JD.string
-        |> required "editing" JD.bool
-        |> required "oldName" JD.string
-        |> custom (JD.map Existing (JD.field "id" JD.string))
-        |> hardcoded Nothing
 
 
 modelToJson : Model -> String
@@ -150,7 +76,7 @@ init location =
                 ( model, Cmd.none )
 
             Existing guid ->
-                ( model, Http.send Fetched <| Http.get ("/canvas/" ++ guid) modelDecoder )
+                ( model, Http.send Fetched <| Http.get ("/canvas/" ++ guid) ResponseDecoder.modelDecoder )
 
 
 toHeader : String -> String

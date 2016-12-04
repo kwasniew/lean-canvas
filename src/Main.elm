@@ -2,10 +2,10 @@ module Main exposing (main)
 
 import LeanCanvas
 import Navigation exposing (..)
-import Html
+import Model exposing (Model)
 
 
-main : Program Never LeanCanvas.Model LeanCanvas.Msg
+main : Program Never Model LeanCanvas.Msg
 main =
     Navigation.program LeanCanvas.locationToMsg
         { view = LeanCanvas.view

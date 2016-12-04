@@ -13566,12 +13566,112 @@ var _elm_lang$navigation$Navigation$subMap = F2(
 	});
 _elm_lang$core$Native_Platform.effectManagers['Navigation'] = {pkg: 'elm-lang/navigation', init: _elm_lang$navigation$Navigation$init, onEffects: _elm_lang$navigation$Navigation$onEffects, onSelfMsg: _elm_lang$navigation$Navigation$onSelfMsg, tag: 'fx', cmdMap: _elm_lang$navigation$Navigation$cmdMap, subMap: _elm_lang$navigation$Navigation$subMap};
 
+var _kwasniew$lean_canvas_elm$Model$Move = F3(
+	function (a, b, c) {
+		return {cardId: a, from: b, to: c};
+	});
+var _kwasniew$lean_canvas_elm$Model$Model = F8(
+	function (a, b, c, d, e, f, g, h) {
+		return {uid: a, cards: b, entryCard: c, name: d, editing: e, oldName: f, page: g, error: h};
+	});
+var _kwasniew$lean_canvas_elm$Model$EntryCard = F3(
+	function (a, b, c) {
+		return {section: a, text: b, id: c};
+	});
+var _kwasniew$lean_canvas_elm$Model$Card = F4(
+	function (a, b, c, d) {
+		return {section: a, text: b, id: c, editing: d};
+	});
+var _kwasniew$lean_canvas_elm$Model$Existing = function (a) {
+	return {ctor: 'Existing', _0: a};
+};
+var _kwasniew$lean_canvas_elm$Model$New = {ctor: 'New'};
+
+var _kwasniew$lean_canvas_elm$ResponseDecoder$pageDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'id',
+	_elm_lang$core$Json_Decode$string,
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_kwasniew$lean_canvas_elm$Model$Existing));
+var _kwasniew$lean_canvas_elm$ResponseDecoder$cardDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'editing',
+	_elm_lang$core$Json_Decode$bool,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'id',
+		_elm_lang$core$Json_Decode$int,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'text',
+			_elm_lang$core$Json_Decode$string,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'section',
+				_elm_lang$core$Json_Decode$string,
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_kwasniew$lean_canvas_elm$Model$Card)))));
+var _kwasniew$lean_canvas_elm$ResponseDecoder$entryCardDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'id',
+	_elm_lang$core$Json_Decode$int,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'text',
+		_elm_lang$core$Json_Decode$string,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'section',
+			_elm_lang$core$Json_Decode$string,
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_kwasniew$lean_canvas_elm$Model$EntryCard))));
+var _kwasniew$lean_canvas_elm$ResponseDecoder$modelDecoder = A2(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$hardcoded,
+	_elm_lang$core$Maybe$Nothing,
+	A2(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$custom,
+		A2(
+			_elm_lang$core$Json_Decode$map,
+			_kwasniew$lean_canvas_elm$Model$Existing,
+			A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$string)),
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'oldName',
+			_elm_lang$core$Json_Decode$string,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'editing',
+				_elm_lang$core$Json_Decode$bool,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'name',
+					_elm_lang$core$Json_Decode$string,
+					A3(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+						'entryCard',
+						_kwasniew$lean_canvas_elm$ResponseDecoder$entryCardDecoder,
+						A3(
+							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+							'cards',
+							_elm_lang$core$Json_Decode$list(_kwasniew$lean_canvas_elm$ResponseDecoder$cardDecoder),
+							A3(
+								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+								'uid',
+								_elm_lang$core$Json_Decode$int,
+								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_kwasniew$lean_canvas_elm$Model$Model)))))))));
+
+var _kwasniew$lean_canvas_elm$LeanCanvas$hashToPage = function (hash) {
+	var _p0 = hash;
+	if (_p0 === '') {
+		return _kwasniew$lean_canvas_elm$Model$New;
+	} else {
+		return _kwasniew$lean_canvas_elm$Model$Existing(
+			A2(_elm_lang$core$String$dropLeft, 1, _p0));
+	}
+};
 var _kwasniew$lean_canvas_elm$LeanCanvas$pageToHash = function (page) {
-	var _p0 = page;
-	if (_p0.ctor === 'New') {
+	var _p1 = page;
+	if (_p1.ctor === 'New') {
 		return '#';
 	} else {
-		return A2(_elm_lang$core$Basics_ops['++'], '#', _p0._0);
+		return A2(_elm_lang$core$Basics_ops['++'], '#', _p1._0);
 	}
 };
 var _kwasniew$lean_canvas_elm$LeanCanvas$moveCard = F3(
@@ -13580,21 +13680,21 @@ var _kwasniew$lean_canvas_elm$LeanCanvas$moveCard = F3(
 			_elm_lang$core$Array$get,
 			move.to,
 			_elm_lang$core$Array$fromList(list));
-		var _p1 = toCardMaybe;
-		if (_p1.ctor === 'Just') {
-			var _p2 = _p1._0;
+		var _p2 = toCardMaybe;
+		if (_p2.ctor === 'Just') {
+			var _p3 = _p2._0;
 			return A3(
 				_elm_lang$core$List$foldr,
 				F2(
 					function (card, result) {
-						return (_elm_lang$core$Native_Utils.eq(card, _p2) && (_elm_lang$core$Native_Utils.cmp(move.from, move.to) < 0)) ? {
+						return (_elm_lang$core$Native_Utils.eq(card, _p3) && (_elm_lang$core$Native_Utils.cmp(move.from, move.to) < 0)) ? {
 							ctor: '::',
-							_0: _p2,
+							_0: _p3,
 							_1: {ctor: '::', _0: fromCard, _1: result}
-						} : ((_elm_lang$core$Native_Utils.eq(card, _p2) && (_elm_lang$core$Native_Utils.cmp(move.from, move.to) > 0)) ? {
+						} : ((_elm_lang$core$Native_Utils.eq(card, _p3) && (_elm_lang$core$Native_Utils.cmp(move.from, move.to) > 0)) ? {
 							ctor: '::',
 							_0: fromCard,
-							_1: {ctor: '::', _0: _p2, _1: result}
+							_1: {ctor: '::', _0: _p3, _1: result}
 						} : (_elm_lang$core$Native_Utils.eq(card, fromCard) ? result : {ctor: '::', _0: card, _1: result}));
 					}),
 				{ctor: '[]'},
@@ -13615,9 +13715,9 @@ var _kwasniew$lean_canvas_elm$LeanCanvas$findCardById = F2(
 	});
 var _kwasniew$lean_canvas_elm$LeanCanvas$reorderCards = F2(
 	function (cards, move) {
-		var _p3 = A2(_kwasniew$lean_canvas_elm$LeanCanvas$findCardById, cards, move.cardId);
-		if (_p3.ctor === 'Just') {
-			return A3(_kwasniew$lean_canvas_elm$LeanCanvas$moveCard, cards, _p3._0, move);
+		var _p4 = A2(_kwasniew$lean_canvas_elm$LeanCanvas$findCardById, cards, move.cardId);
+		if (_p4.ctor === 'Just') {
+			return A3(_kwasniew$lean_canvas_elm$LeanCanvas$moveCard, cards, _p4._0, move);
 		} else {
 			return cards;
 		}
@@ -13638,9 +13738,9 @@ var _kwasniew$lean_canvas_elm$LeanCanvas$setEditMode = F3(
 			{editing: condition}) : card;
 	});
 var _kwasniew$lean_canvas_elm$LeanCanvas$textError = function (modelError) {
-	var _p4 = modelError;
-	if (_p4.ctor === 'Just') {
-		return _p4._0;
+	var _p5 = modelError;
+	if (_p5.ctor === 'Just') {
+		return _p5._0;
 	} else {
 		return '';
 	}
@@ -13649,9 +13749,9 @@ var _kwasniew$lean_canvas_elm$LeanCanvas$escape = 27;
 var _kwasniew$lean_canvas_elm$LeanCanvas$enter = 13;
 var _kwasniew$lean_canvas_elm$LeanCanvas$onKeyUp = function (config) {
 	var isCode = function (code) {
-		var _p5 = A2(_elm_lang$core$Dict$get, code, config);
-		if (_p5.ctor === 'Just') {
-			return _elm_lang$core$Json_Decode$succeed(_p5._0);
+		var _p6 = A2(_elm_lang$core$Dict$get, code, config);
+		if (_p6.ctor === 'Just') {
+			return _elm_lang$core$Json_Decode$succeed(_p6._0);
 		} else {
 			return _elm_lang$core$Json_Decode$fail('not the right key code');
 		}
@@ -13820,104 +13920,6 @@ var _kwasniew$lean_canvas_elm$LeanCanvas$drags = _elm_lang$core$Native_Platform.
 				A2(_elm_lang$core$Json_Decode$field, 'from', _elm_lang$core$Json_Decode$int));
 		},
 		A2(_elm_lang$core$Json_Decode$field, 'cardId', _elm_lang$core$Json_Decode$int)));
-var _kwasniew$lean_canvas_elm$LeanCanvas$Move = F3(
-	function (a, b, c) {
-		return {cardId: a, from: b, to: c};
-	});
-var _kwasniew$lean_canvas_elm$LeanCanvas$Model = F8(
-	function (a, b, c, d, e, f, g, h) {
-		return {uid: a, cards: b, entryCard: c, name: d, editing: e, oldName: f, page: g, error: h};
-	});
-var _kwasniew$lean_canvas_elm$LeanCanvas$EntryCard = F3(
-	function (a, b, c) {
-		return {section: a, text: b, id: c};
-	});
-var _kwasniew$lean_canvas_elm$LeanCanvas$entryCardDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'id',
-	_elm_lang$core$Json_Decode$int,
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'text',
-		_elm_lang$core$Json_Decode$string,
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'section',
-			_elm_lang$core$Json_Decode$string,
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_kwasniew$lean_canvas_elm$LeanCanvas$EntryCard))));
-var _kwasniew$lean_canvas_elm$LeanCanvas$Card = F4(
-	function (a, b, c, d) {
-		return {section: a, text: b, id: c, editing: d};
-	});
-var _kwasniew$lean_canvas_elm$LeanCanvas$cardDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'editing',
-	_elm_lang$core$Json_Decode$bool,
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'id',
-		_elm_lang$core$Json_Decode$int,
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'text',
-			_elm_lang$core$Json_Decode$string,
-			A3(
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'section',
-				_elm_lang$core$Json_Decode$string,
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_kwasniew$lean_canvas_elm$LeanCanvas$Card)))));
-var _kwasniew$lean_canvas_elm$LeanCanvas$Existing = function (a) {
-	return {ctor: 'Existing', _0: a};
-};
-var _kwasniew$lean_canvas_elm$LeanCanvas$pageDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'id',
-	_elm_lang$core$Json_Decode$string,
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_kwasniew$lean_canvas_elm$LeanCanvas$Existing));
-var _kwasniew$lean_canvas_elm$LeanCanvas$modelDecoder = A2(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$hardcoded,
-	_elm_lang$core$Maybe$Nothing,
-	A2(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$custom,
-		A2(
-			_elm_lang$core$Json_Decode$map,
-			_kwasniew$lean_canvas_elm$LeanCanvas$Existing,
-			A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$string)),
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'oldName',
-			_elm_lang$core$Json_Decode$string,
-			A3(
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'editing',
-				_elm_lang$core$Json_Decode$bool,
-				A3(
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'name',
-					_elm_lang$core$Json_Decode$string,
-					A3(
-						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-						'entryCard',
-						_kwasniew$lean_canvas_elm$LeanCanvas$entryCardDecoder,
-						A3(
-							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-							'cards',
-							_elm_lang$core$Json_Decode$list(_kwasniew$lean_canvas_elm$LeanCanvas$cardDecoder),
-							A3(
-								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-								'uid',
-								_elm_lang$core$Json_Decode$int,
-								_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_kwasniew$lean_canvas_elm$LeanCanvas$Model)))))))));
-var _kwasniew$lean_canvas_elm$LeanCanvas$New = {ctor: 'New'};
-var _kwasniew$lean_canvas_elm$LeanCanvas$hashToPage = function (hash) {
-	var _p6 = hash;
-	if (_p6 === '') {
-		return _kwasniew$lean_canvas_elm$LeanCanvas$New;
-	} else {
-		return _kwasniew$lean_canvas_elm$LeanCanvas$Existing(
-			A2(_elm_lang$core$String$dropLeft, 1, _p6));
-	}
-};
 var _kwasniew$lean_canvas_elm$LeanCanvas$NoOp = {ctor: 'NoOp'};
 var _kwasniew$lean_canvas_elm$LeanCanvas$Navigate = function (a) {
 	return {ctor: 'Navigate', _0: a};
@@ -13948,7 +13950,7 @@ var _kwasniew$lean_canvas_elm$LeanCanvas$init = function (location) {
 				A2(
 					_elm_lang$http$Http$get,
 					A2(_elm_lang$core$Basics_ops['++'], '/canvas/', _p7._0),
-					_kwasniew$lean_canvas_elm$LeanCanvas$modelDecoder))
+					_kwasniew$lean_canvas_elm$ResponseDecoder$modelDecoder))
 		};
 	}
 };
@@ -13999,7 +14001,7 @@ var _kwasniew$lean_canvas_elm$LeanCanvas$update = F2(
 								model.cards,
 								{
 									ctor: '::',
-									_0: A4(_kwasniew$lean_canvas_elm$LeanCanvas$Card, model.entryCard.section, entryText, model.uid, false),
+									_0: A4(_kwasniew$lean_canvas_elm$Model$Card, model.entryCard.section, entryText, model.uid, false),
 									_1: {ctor: '[]'}
 								}),
 							uid: model.uid + 1,
@@ -14225,7 +14227,7 @@ var _kwasniew$lean_canvas_elm$LeanCanvas$update = F2(
 					if (_p15.ctor === 'New') {
 						return {
 							ctor: '_Tuple2',
-							_0: _kwasniew$lean_canvas_elm$LeanCanvas$initialModel(_kwasniew$lean_canvas_elm$LeanCanvas$New),
+							_0: _kwasniew$lean_canvas_elm$LeanCanvas$initialModel(_kwasniew$lean_canvas_elm$Model$New),
 							_1: _elm_lang$core$Platform_Cmd$none
 						};
 					} else {
@@ -14240,7 +14242,7 @@ var _kwasniew$lean_canvas_elm$LeanCanvas$update = F2(
 								A2(
 									_elm_lang$http$Http$get,
 									A2(_elm_lang$core$Basics_ops['++'], '/canvas/', _p15._0),
-									_kwasniew$lean_canvas_elm$LeanCanvas$modelDecoder))
+									_kwasniew$lean_canvas_elm$ResponseDecoder$modelDecoder))
 						};
 					}
 				}
@@ -14256,7 +14258,7 @@ var _kwasniew$lean_canvas_elm$LeanCanvas$update = F2(
 				if (_p17.ctor === 'Ok') {
 					return {ctor: '_Tuple2', _0: _p17._0, _1: _elm_lang$core$Platform_Cmd$none};
 				} else {
-					var emptyModel = _kwasniew$lean_canvas_elm$LeanCanvas$initialModel(_kwasniew$lean_canvas_elm$LeanCanvas$New);
+					var emptyModel = _kwasniew$lean_canvas_elm$LeanCanvas$initialModel(_kwasniew$lean_canvas_elm$Model$New);
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
@@ -14692,14 +14694,14 @@ var _kwasniew$lean_canvas_elm$LeanCanvas$view = function (model) {
 									_0: _elm_lang$html$Html_Attributes$class('saveButton'),
 									_1: {
 										ctor: '::',
-										_0: _elm_lang$core$Native_Utils.eq(model.page, _kwasniew$lean_canvas_elm$LeanCanvas$New) ? _elm_lang$html$Html_Events$onClick(_kwasniew$lean_canvas_elm$LeanCanvas$Save) : _elm_lang$html$Html_Events$onClick(_kwasniew$lean_canvas_elm$LeanCanvas$Update),
+										_0: _elm_lang$core$Native_Utils.eq(model.page, _kwasniew$lean_canvas_elm$Model$New) ? _elm_lang$html$Html_Events$onClick(_kwasniew$lean_canvas_elm$LeanCanvas$Save) : _elm_lang$html$Html_Events$onClick(_kwasniew$lean_canvas_elm$LeanCanvas$Update),
 										_1: {ctor: '[]'}
 									}
 								},
 								{
 									ctor: '::',
 									_0: _elm_lang$html$Html$text(
-										_elm_lang$core$Native_Utils.eq(model.page, _kwasniew$lean_canvas_elm$LeanCanvas$New) ? 'save' : 'update'),
+										_elm_lang$core$Native_Utils.eq(model.page, _kwasniew$lean_canvas_elm$Model$New) ? 'save' : 'update'),
 									_1: {ctor: '[]'}
 								}),
 							_1: {ctor: '[]'}
@@ -14727,7 +14729,7 @@ var _kwasniew$lean_canvas_elm$LeanCanvas$view = function (model) {
 										{
 											ctor: '::',
 											_0: _elm_lang$html$Html_Events$onClick(
-												_kwasniew$lean_canvas_elm$LeanCanvas$Navigate(_kwasniew$lean_canvas_elm$LeanCanvas$New)),
+												_kwasniew$lean_canvas_elm$LeanCanvas$Navigate(_kwasniew$lean_canvas_elm$Model$New)),
 											_1: {ctor: '[]'}
 										},
 										{
@@ -14753,7 +14755,7 @@ var _kwasniew$lean_canvas_elm$Main$main = A2(
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
 if (typeof _kwasniew$lean_canvas_elm$Main$main !== 'undefined') {
-    _kwasniew$lean_canvas_elm$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Dict.LeafColor":{"args":[],"tags":{"LBBlack":[],"LBlack":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":["Dict.LeafColor"]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Dict.NColor":{"args":[],"tags":{"BBlack":[],"Red":[],"NBlack":[],"Black":[]}},"LeanCanvas.Page":{"args":[],"tags":{"New":[],"Existing":["String"]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String"],"NetworkError":[],"Timeout":[],"BadStatus":["Http.Response String"],"BadPayload":["String","Http.Response String"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"LeanCanvas.Msg":{"args":[],"tags":{"AddCard":[],"EnableEditCard":["LeanCanvas.Card"],"EnableAddCard":["String"],"ConfirmUpdateCard":[],"Navigate":["LeanCanvas.Page"],"AbortUpdateCard":["Int"],"EnableEditName":[],"DeleteCard":["Int"],"UpdateCard":["String"],"Saved":["Result.Result Http.Error String"],"ChangePage":["LeanCanvas.Page"],"MoveCard":["LeanCanvas.Move"],"Fetched":["Result.Result Http.Error LeanCanvas.Model"],"UpdateName":["String"],"NoOp":[],"DeleteEntryCard":[],"UpdateEntryCard":["String"],"AbortEditName":[],"Save":[],"Update":[],"ConfirmEditName":[]}}},"aliases":{"LeanCanvas.Model":{"args":[],"type":"{ uid : Int , cards : List LeanCanvas.Card , entryCard : LeanCanvas.EntryCard , name : String , editing : Bool , oldName : String , page : LeanCanvas.Page , error : Maybe.Maybe String }"},"Http.Response":{"args":["body"],"type":"{ url : String , status : { code : Int, message : String } , headers : Dict.Dict String String , body : body }"},"LeanCanvas.EntryCard":{"args":[],"type":"{ section : String, text : String, id : Int }"},"LeanCanvas.Move":{"args":[],"type":"{ cardId : Int, from : Int, to : Int }"},"LeanCanvas.Card":{"args":[],"type":"{ section : String, text : String, id : Int, editing : Bool }"}},"message":"LeanCanvas.Msg"},"versions":{"elm":"0.18.0"}});
+    _kwasniew$lean_canvas_elm$Main$main(Elm['Main'], 'Main', {"types":{"unions":{"Dict.LeafColor":{"args":[],"tags":{"LBBlack":[],"LBlack":[]}},"Dict.Dict":{"args":["k","v"],"tags":{"RBNode_elm_builtin":["Dict.NColor","k","v","Dict.Dict k v","Dict.Dict k v"],"RBEmpty_elm_builtin":["Dict.LeafColor"]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Dict.NColor":{"args":[],"tags":{"BBlack":[],"Red":[],"NBlack":[],"Black":[]}},"Model.Page":{"args":[],"tags":{"New":[],"Existing":["String"]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String"],"NetworkError":[],"Timeout":[],"BadStatus":["Http.Response String"],"BadPayload":["String","Http.Response String"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"LeanCanvas.Msg":{"args":[],"tags":{"AddCard":[],"EnableEditCard":["Model.Card"],"EnableAddCard":["String"],"ConfirmUpdateCard":[],"Navigate":["Model.Page"],"AbortUpdateCard":["Int"],"EnableEditName":[],"DeleteCard":["Int"],"UpdateCard":["String"],"Saved":["Result.Result Http.Error String"],"ChangePage":["Model.Page"],"MoveCard":["Model.Move"],"Fetched":["Result.Result Http.Error Model.Model"],"UpdateName":["String"],"NoOp":[],"DeleteEntryCard":[],"UpdateEntryCard":["String"],"AbortEditName":[],"Save":[],"Update":[],"ConfirmEditName":[]}}},"aliases":{"Http.Response":{"args":["body"],"type":"{ url : String , status : { code : Int, message : String } , headers : Dict.Dict String String , body : body }"},"Model.Move":{"args":[],"type":"{ cardId : Int, from : Int, to : Int }"},"Model.Model":{"args":[],"type":"{ uid : Int , cards : List Model.Card , entryCard : Model.EntryCard , name : String , editing : Bool , oldName : String , page : Model.Page , error : Maybe.Maybe String }"},"Model.Card":{"args":[],"type":"{ section : String, text : String, id : Int, editing : Bool }"},"Model.EntryCard":{"args":[],"type":"{ section : String, text : String, id : Int }"}},"message":"LeanCanvas.Msg"},"versions":{"elm":"0.18.0"}});
 }
 
 if (typeof define === "function" && define['amd'])
