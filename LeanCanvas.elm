@@ -296,7 +296,7 @@ view model =
                 ]
             , div []
                 [ button
-                    [ onClick NewCanvas
+                    [ onClick (Navigate New)
                     ]
                     [ text "new canvas" ]
                 ]
@@ -333,7 +333,7 @@ type Msg
     | Saved (Result Http.Error String)
     | Fetched (Result Http.Error Model)
     | ChangePage Page
-    | NewCanvas
+    | Navigate Page
     | NoOp
 
 
@@ -451,10 +451,15 @@ update msg model =
                     ( { model | error = Just (toString error) }, Cmd.none )
 
         ChangePage page ->
-            ( { model | page = page }, Cmd.none )
+            case page of
+                New ->
+                    ( initialModel New, Cmd.none )
 
-        NewCanvas ->
-            ( initialModel New, newUrl "#" )
+                Existing guid ->
+                    ( { model | page = page }, Http.send Fetched <| Http.get ("/canvas/" ++ guid) modelDecoder )
+
+        Navigate page ->
+            ( model, newUrl <| pageToHash page )
 
         Fetched response ->
             case response of
@@ -512,6 +517,16 @@ port drags : (Move -> msg) -> Sub msg
 subscriptions : Model -> Sub Msg
 subscriptions model =
     drags MoveCard
+
+
+pageToHash : Page -> String
+pageToHash page =
+    case page of
+        New ->
+            "#"
+
+        Existing guid ->
+            "#" ++ guid
 
 
 hashToPage : String -> Page
