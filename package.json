@@ -5,7 +5,7 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
-    "postinstall": "elm make src/Main.elm --output public/elm.js"
+    "postinstall": "elm make src/Main.elm --output public/elm.js --yes"
   },
   "repository": {
     "type": "git",
