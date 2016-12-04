@@ -26,13 +26,11 @@ drag and drop
 
 atom dev env setup: https://github.com/knowthen/elm/blob/master/DEVSETUP.md
 
-move card bug with duplicates
-elm navigation - newUrl
-separate backend and configurable frontend with flags
-update existing record
-persistent store
 reload model after new url typed
 new canvas button
+move card bug with duplicates
+separate backend and configurable frontend with flags
+persistent store
 tests
 styling: http://tachyons.io/ + icons
 personal map

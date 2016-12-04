@@ -294,6 +294,12 @@ view model =
             , div []
                 [ text (textError model.error)
                 ]
+            , div []
+                [ button
+                    [ onClick NewCanvas
+                    ]
+                    [ text "new canvas" ]
+                ]
             ]
 
 
@@ -327,6 +333,7 @@ type Msg
     | Saved (Result Http.Error String)
     | Fetched (Result Http.Error Model)
     | ChangePage Page
+    | NewCanvas
     | NoOp
 
 
@@ -445,6 +452,9 @@ update msg model =
 
         ChangePage page ->
             ( { model | page = page }, Cmd.none )
+
+        NewCanvas ->
+            ( initialModel New, newUrl "#" )
 
         Fetched response ->
             case response of
