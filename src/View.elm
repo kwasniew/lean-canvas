@@ -86,7 +86,7 @@ viewCard entryCard card =
             [ text card.text
             , div [ class "delete-button" ]
                 [ span [ onClick (DeleteCard card.id) ]
-                    [ text "x" ]
+                    [ text "delete" ]
                 ]
             ]
 
