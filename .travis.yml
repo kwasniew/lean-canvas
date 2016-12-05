@@ -1,3 +1,7 @@
+cache:
+  directories:
+    - tests/elm-stuff/build-artifacts
+    - /elm-stuff/build-artifacts
 language: node_js
 node_js:
   - "6"

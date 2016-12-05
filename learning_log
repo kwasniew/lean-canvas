@@ -25,6 +25,7 @@ drag and drop
 
 
 atom dev env setup: https://github.com/knowthen/elm/blob/master/DEVSETUP.md
+https://8thlight.com/blog/rob-looby/2016/04/07/caching-elm-builds-on-travis-ci.html
 
 separate backend and configurable frontend with flags
 delegation
@@ -43,3 +44,4 @@ Learning objectives:
 - HTTP handling
 - keyboard shortcuts handling
 - elm refactoring capabilities (start with one big file and test splitting)
+- setup travis build and heroku deployment
