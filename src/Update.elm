@@ -168,7 +168,7 @@ moveCard : List Card -> Card -> Move -> List Card
 moveCard list fromCard move =
     let
         toCardMaybe =
-            (Array.get move.to (Array.fromList list))
+            (Array.get move.to (Array.fromList (List.filter (\card -> card.section == fromCard.section) list)))
     in
         case toCardMaybe of
             Just toCard ->

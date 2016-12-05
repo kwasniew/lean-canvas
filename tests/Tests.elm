@@ -42,4 +42,26 @@ all =
         , test "three items - move down by two" <|
             \() ->
                 expectReordered [ 100, 200, 300 ] (Move 300 2 0) [ 300, 100, 200 ]
+        , test "mixed sections" <|
+            \() ->
+                let
+                    cardFromAnotherSection =
+                        Card "another_section" "some text" 0 False
+
+                    card1 =
+                        Card "section" "a" 1 False
+
+                    card2 =
+                        Card "section" "b" 2 False
+
+                    move =
+                        Move 1 0 1
+
+                    cards =
+                        [ cardFromAnotherSection, card1, card2 ]
+
+                    expectedReordered =
+                        [ cardFromAnotherSection, card2, card1 ]
+                in
+                    Expect.equal (reorderCards cards move) expectedReordered
         ]
