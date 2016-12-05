@@ -4,21 +4,24 @@
  */
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
 html, body {
-    height: 97%;
-    box-sizing: border-box;
+  height: 97%;
+  box-sizing: border-box;
 }
+
 *, *:before, *:after {
-    box-sizing: inherit;
+  box-sizing: inherit;
 }
+
 body {
-    padding: 20px;
+  padding: 20px;
 }
+
 header {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 /**
@@ -26,72 +29,91 @@ header {
  * ---------------------------------------------
  */
 
- .add-item {
-     padding: 5px;
-     cursor: pointer;
- }
+.add-item {
+  padding: 5px;
+  cursor: pointer;
+}
 
- .add-item:hover {
-     background-color: lightgrey;
- }
+.add-item:hover {
+  background-color: lightgrey;
+}
 
- .card {
-     background-color: #FFF;
-     position: relative;
-     padding: 6px 8px;
-     border: 1px solid black;
-     margin-top: 5px;
-     margin-bottom: 5px;
-     border-radius: 3px;
-     cursor: pointer;
- }
+.card {
+  background-color: #FFF;
+  position: relative;
+  padding: 6px 8px;
+  border: 1px solid black;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  border-radius: 3px;
+  cursor: pointer;
+}
 
- .new-card-input, .edit-card-input, .header input {
-     margin-top: 5px;
-     margin-bottom: 5px;
-     display: block;
-     width: 100%;
-     padding: 6px 8px;
-     margin-top: 5px;
-     margin-bottom: 5px;
-     border-radius: 3px;
-     font-size: 1em;
- }
+.new-card-input, .edit-card-input, .header input {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  display: block;
+  width: 100%;
+  padding: 6px 8px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  border-radius: 3px;
+  font-size: 1em;
+}
 
- .ghost {
-   opacity: 0.4;
-   color: lightgrey;
-   background-color: lightgrey;
- }
+.ghost {
+  opacity: 0.4;
+  color: lightgrey;
+  background-color: lightgrey;
+}
 
- .scrollable-items {
-     margin-top: 5px;
-     margin-bottom: 5px;
-     overflow-y: auto;
-     overflow-x: hidden;
- }
+.scrollable-items {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
 
- .delete-button {
-     position: absolute;
-     top: 2px;
-     right: 2px;
-     background-color: lightblue;
-     padding-left: 3px;
-     padding-right: 3px;
-     vertical-align: middle;
- }
+.delete-button {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background-color: lightblue;
+  padding-left: 3px;
+  padding-right: 3px;
+  vertical-align: middle;
+}
 
- .sortable-placeholder {
-     background: lightgray;
- }
+.sortable-placeholder {
+  background: lightgray;
+}
 
- .template {
-     display: none;
- }
+.template {
+  display: none;
+}
 
- .saveButton {
-   margin: 20px;
- }
+.action-button {
+  color: white;
+  border-radius: 4px;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  padding: .5em 1em;
+  font-size: 100%;
+  font-family: inherit;
+  margin: 4px;
+}
+
+.save-button {
+  background: rgb(28, 184, 65);
+}
+
+.new-button {
+  background: rgb(66, 184, 221);
+}
+
+.action-area {
+  margin: 20px 0px;
+}
+
 
 
 /**
@@ -106,64 +128,59 @@ header {
 }
 
 .header {
-    flex: 1;
-    cursor: pointer;
-    font-weight: bold;
+  flex: 1;
+  cursor: pointer;
+  font-weight: bold;
 }
 
 .canvas {
-    flex: 20;
-    border: 2px solid black;
-
-    display: flex;
-    flex-direction: column;
+  flex: 20;
+  border: 2px solid black;
+  display: flex;
+  flex-direction: column;
 }
 
 .first-row {
-    flex-basis: 75%;
-
-    display: flex;
-    flex-direction: row;
+  flex-basis: 75%;
+  display: flex;
+  flex-direction: row;
 }
 
 .second-row {
-    border-top: 2px solid black;
-    flex-basis: 25%;
-
-    display: flex;
-    flex-direction: row;
+  border-top: 2px solid black;
+  flex-basis: 25%;
+  display: flex;
+  flex-direction: row;
 }
 
 .first-row-column {
-    flex-basis: 20%;
-
-    display: flex;
-    flex-direction: column;
+  flex-basis: 20%;
+  display: flex;
+  flex-direction: column;
 }
 
 .first-row-column:not(:last-child) {
-    border-right: 2px solid black;
+  border-right: 2px solid black;
 }
 
 .first-row-column-row {
-    flex-basis: 50%;
+  flex-basis: 50%;
 }
 
 .first-row-column-row:not(:last-child) {
-    border-bottom: 2px solid black;
+  border-bottom: 2px solid black;
 }
 
 .second-row-column {
-    flex-basis: 50%;
+  flex-basis: 50%;
 }
 
 .second-row-column:not(:last-child) {
-    border-right: 2px solid black;
+  border-right: 2px solid black;
 }
 
 .section {
-    padding: 10px;
-
-    display:flex;
-    flex-direction: column;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
 }

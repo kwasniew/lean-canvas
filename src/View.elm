@@ -131,9 +131,9 @@ view model =
                     , viewSectionWithModel "revenue-streams" "second-row-column"
                     ]
                 ]
-            , div []
+            , div [ class "action-area" ]
                 [ button
-                    [ class "saveButton"
+                    [ class "save-button action-button"
                     , if model.page == New then
                         onClick Save
                       else
@@ -146,15 +146,14 @@ view model =
                             "update"
                         )
                     ]
+                , button
+                    [ onClick (Navigate New)
+                    , class "new-button action-button"
+                    ]
+                    [ text "new canvas" ]
                 ]
             , div []
                 [ text (textError model.error)
-                ]
-            , div []
-                [ button
-                    [ onClick (Navigate New)
-                    ]
-                    [ text "new canvas" ]
                 ]
             ]
 
