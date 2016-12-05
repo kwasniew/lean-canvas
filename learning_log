@@ -29,7 +29,9 @@ https://8thlight.com/blog/rob-looby/2016/04/07/caching-elm-builds-on-travis-ci.h
 
 separate backend and configurable frontend with flags
 delegation
-disable save button on pending request
+disable save button on pending request - type RemoteData = NotAsked | Loading | Success a | Failure e
+https://github.com/krisajenkins/remotedata
+more explicit router
 persistent store
 tests
 styling: http://tachyons.io/ + icons
