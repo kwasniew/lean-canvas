@@ -5,7 +5,8 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
-    "postinstall": "elm make src/Main.elm --output public/elm.js --yes"
+    "postinstall": "elm make src/Main.elm --output public/elm.js --yes",
+    "test": "elm-test"
   },
   "repository": {
     "type": "git",
@@ -20,5 +21,8 @@
     "express": "4.14.0",
     "node-uuid": "1.4.7",
     "sortablejs": "1.5.0-rc1"
+  },
+  "devDependencies": {
+    "elm-test": "0.18.2"
   }
 }
