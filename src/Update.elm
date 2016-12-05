@@ -23,9 +23,14 @@ setEditMode id condition card =
 saveEditCard : EntryCard -> Card -> Card
 saveEditCard entryCard card =
     if card.id == entryCard.id then
-        { card | editing = False, text = (String.trimRight entryCard.text) }
+        { card | editing = False, text = (removeNewLine entryCard.text) }
     else
         card
+
+
+removeNewLine : String -> String
+removeNewLine str =
+    String.filter (\c -> c /= '\n') str
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -48,7 +53,7 @@ update msg model =
                     model.entryCard
 
                 entryText =
-                    String.trimRight entryCard.text
+                    removeNewLine entryCard.text
             in
                 if String.length entryText > 0 then
                     ( { model
@@ -89,7 +94,7 @@ update msg model =
             ( { model | entryCard = { section = "", text = "", id = 0 } }, Cmd.none )
 
         UpdateEntryCard txt ->
-            ( { model | entryCard = { section = model.entryCard.section, text = txt, id = model.entryCard.id } }, Cmd.none )
+            ( { model | entryCard = { section = model.entryCard.section, text = (removeNewLine txt), id = model.entryCard.id } }, Cmd.none )
 
         MoveCard move ->
             ( { model | cards = reorderCards model.cards move }, Cmd.none )
